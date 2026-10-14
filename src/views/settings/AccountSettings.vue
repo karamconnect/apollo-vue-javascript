@@ -1,15 +1,33 @@
 <script setup>
 import SettingsRow from '@/components/settings/SettingsRow.vue';
 import SettingsSection from '@/components/settings/SettingsSection.vue';
+import { zodResolver } from '@primevue/forms/resolvers/zod';
 import { useConfirm } from 'primevue/useconfirm';
 import { useToast } from 'primevue/usetoast';
 import { computed, ref } from 'vue';
+import { changePasswordSchema, MIN_PASSWORD_LENGTH } from './password-schema';
 
 // Placeholder: nothing here is wired to an auth backend yet.
 const toast = useToast();
 const confirm = useConfirm();
 
-const passwords = ref({ current: '', next: '', confirm: '' });
+const passwordResolver = zodResolver(changePasswordSchema);
+const emptyPasswords = { currentPassword: '', newPassword: '', confirmPassword: '' };
+// Re-keying clears the password form after a successful update.
+const passwordFormKey = ref(0);
+
+// The form validates from the start (so the button starts disabled), but a field only
+// shows its error once the user has typed in it.
+function showError(field) {
+    return Boolean(field?.invalid && field?.dirty);
+}
+
+function onPasswordSubmit({ valid }) {
+    if (!valid) return;
+
+    notAvailable();
+    passwordFormKey.value++;
+}
 
 const DELETE_PHRASE = 'DELETE';
 const deleteConfirmation = ref('');
@@ -38,13 +56,54 @@ function submitDelete(acceptCallback) {
 
 <template>
     <SettingsSection title="Account" description="Sign-in and security.">
-        <SettingsRow label="Password" description="Use at least 8 characters." for="currentPassword">
-            <div class="flex flex-col gap-4 md:w-80">
-                <Password v-model="passwords.current" inputId="currentPassword" placeholder="Current password" :feedback="false" toggleMask fluid />
-                <Password v-model="passwords.next" placeholder="New password" ariaLabel="New password" toggleMask fluid />
-                <Password v-model="passwords.confirm" placeholder="Confirm new password" ariaLabel="Confirm new password" :feedback="false" toggleMask fluid />
-                <Button label="Update password" class="self-start" @click="notAvailable" />
-            </div>
+        <SettingsRow label="Password" :description="`Use at least ${MIN_PASSWORD_LENGTH} characters.`" for="currentPassword">
+            <Form :key="passwordFormKey" v-slot="$form" :initialValues="emptyPasswords" :resolver="passwordResolver" validateOnMount novalidate class="flex flex-col gap-4 md:w-80" @submit="onPasswordSubmit">
+                <div class="flex flex-col gap-1">
+                    <Password
+                        name="currentPassword"
+                        inputId="currentPassword"
+                        placeholder="Current password"
+                        autocomplete="current-password"
+                        :feedback="false"
+                        toggleMask
+                        fluid
+                        :invalid="showError($form.currentPassword)"
+                        :inputProps="{ 'aria-describedby': showError($form.currentPassword) ? 'current-password-error' : undefined }"
+                    />
+                    <Message v-if="showError($form.currentPassword)" id="current-password-error" severity="error" size="small" variant="simple">{{ $form.currentPassword.error?.message }}</Message>
+                </div>
+
+                <div class="flex flex-col gap-1">
+                    <Password
+                        name="newPassword"
+                        placeholder="New password"
+                        ariaLabel="New password"
+                        autocomplete="new-password"
+                        toggleMask
+                        fluid
+                        :invalid="showError($form.newPassword)"
+                        :inputProps="{ 'aria-describedby': showError($form.newPassword) ? 'new-password-error' : undefined }"
+                    />
+                    <Message v-if="showError($form.newPassword)" id="new-password-error" severity="error" size="small" variant="simple">{{ $form.newPassword.error?.message }}</Message>
+                </div>
+
+                <div class="flex flex-col gap-1">
+                    <Password
+                        name="confirmPassword"
+                        placeholder="Confirm new password"
+                        ariaLabel="Confirm new password"
+                        autocomplete="new-password"
+                        :feedback="false"
+                        toggleMask
+                        fluid
+                        :invalid="showError($form.confirmPassword)"
+                        :inputProps="{ 'aria-describedby': showError($form.confirmPassword) ? 'confirm-password-error' : undefined }"
+                    />
+                    <Message v-if="showError($form.confirmPassword)" id="confirm-password-error" severity="error" size="small" variant="simple">{{ $form.confirmPassword.error?.message }}</Message>
+                </div>
+
+                <Button type="submit" label="Update password" class="self-start" :disabled="!$form.valid" />
+            </Form>
         </SettingsRow>
 
         <SettingsRow label="Sessions" description="Sign out of this device.">
