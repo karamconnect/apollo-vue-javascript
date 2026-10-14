@@ -18,11 +18,54 @@ const router = createRouter({
                 },
                 {
                     path: '/settings',
-                    name: 'settings',
-                    meta: {
-                        breadcrumb: ['Settings']
-                    },
-                    component: () => import('@/views/Settings.vue')
+                    component: () => import('@/views/settings/SettingsLayout.vue'),
+                    children: [
+                        {
+                            path: '',
+                            name: 'settings',
+                            redirect: '/settings/profile'
+                        },
+                        {
+                            path: 'profile',
+                            name: 'settings-profile',
+                            meta: {
+                                breadcrumb: ['Settings', 'Profile']
+                            },
+                            component: () => import('@/views/settings/ProfileSettings.vue')
+                        },
+                        {
+                            path: 'account',
+                            name: 'settings-account',
+                            meta: {
+                                breadcrumb: ['Settings', 'Account']
+                            },
+                            component: () => import('@/views/settings/AccountSettings.vue')
+                        },
+                        {
+                            path: 'preferences',
+                            name: 'settings-preferences',
+                            meta: {
+                                breadcrumb: ['Settings', 'Preferences']
+                            },
+                            component: () => import('@/views/settings/PreferencesSettings.vue')
+                        },
+                        {
+                            path: 'notifications',
+                            name: 'settings-notifications',
+                            meta: {
+                                breadcrumb: ['Settings', 'Notifications']
+                            },
+                            component: () => import('@/views/settings/NotificationSettings.vue')
+                        },
+                        {
+                            path: 'appearance',
+                            name: 'settings-appearance',
+                            meta: {
+                                breadcrumb: ['Settings', 'Appearance']
+                            },
+                            component: () => import('@/views/settings/AppearanceSettings.vue')
+                        }
+                    ]
                 },
                 {
                     path: '/help',

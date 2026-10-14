@@ -1,8 +1,10 @@
 <script setup>
 import { useLayout } from '@/layout/composables/layout';
 import { computed } from 'vue';
+import { useRoute } from 'vue-router';
 
 const { layoutState, isDesktop, isSlim, hasOverlaySubmenu } = useLayout();
+const route = useRoute();
 
 const props = defineProps({
     item: {
@@ -24,6 +26,9 @@ const fullPath = computed(() => (props.item.path ? (props.parentPath ? props.par
 const isActive = computed(() => {
     return props.item.path ? layoutState.activePath?.startsWith(fullPath.value) : layoutState.activePath === props.item.to;
 });
+
+// Keep a leaf item highlighted on its nested routes (e.g. /settings/profile); '/' only matches exactly.
+const isRouteActive = computed(() => !!props.item.to && props.item.to !== '/' && route.path.startsWith(props.item.to + '/'));
 
 const itemClick = (event, item) => {
     if (item.disabled) {
@@ -81,7 +86,7 @@ const onMouseEnter = () => {
             v-if="item.to && !item.items && item.visible !== false"
             @click="itemClick($event, item)"
             exactActiveClass="active-route"
-            :class="item.class"
+            :class="[item.class, { 'active-route': isRouteActive }]"
             tabindex="0"
             :to="item.to"
             @mouseenter="onMouseEnter"
