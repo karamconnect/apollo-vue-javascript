@@ -15,7 +15,10 @@ Lockfile is `package-lock.json` → npm.
 - `npm run lint` — ESLint with `--fix` (vue3-essential + prettier)
 - `npm run format` — Prettier write (js/vue only). Don't point `prettier --write` at `src/assets/` — vendor submodule styles, not in `.prettierignore`.
 
-No test runner configured.
+- `npm test` — Vitest (run once); `npm run test:watch` for watch mode
+- Single file: `npx vitest run src/stores/__tests__/layout.spec.js`; single test: add `-t "<name>"`
+
+Vitest is pinned to v3 because v4+/v5 require Vite 6+ (project is on Vite 5). Test environment is jsdom (`test` block in `vite.config.mjs`). Store tests live in `src/stores/__tests__/`: fresh `setActivePinia(createPinia())` and `localStorage.clear()` per test; `@primeuix/themes` is mocked in the layout tests. Don't `structuredClone` store state in tests (reactive proxies can't be cloned).
 
 ## Conventions
 

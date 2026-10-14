@@ -6,6 +6,8 @@
         "dev": "vite",
         "build": "vite build",
         "preview": "vite preview",
+        "test": "vitest run",
+        "test:watch": "vitest",
         "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs --fix --ignore-path .gitignore",
         "format": "prettier --write \"**/*.{js,vue,d.ts}\""
     },
@@ -27,10 +29,12 @@
         "@vue/eslint-config-prettier": "^9.0.0",
         "eslint": "^8.57.0",
         "eslint-plugin-vue": "^9.23.0",
+        "jsdom": "^29.1.1",
         "prettier": "^3.2.5",
         "sass": "1.62.1",
         "tailwindcss": "^4.1.17",
         "unplugin-vue-components": "^0.27.3",
-        "vite": "^5.3.1"
+        "vite": "^5.3.1",
+        "vitest": "^3.2.7"
     }
 }
