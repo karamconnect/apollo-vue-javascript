@@ -1,9 +1,9 @@
 <script setup>
-import { useLayout } from '@/layout/composables/layout';
+import { useLayoutStore } from '@/stores/layout';
 import { computed } from 'vue';
 import { useRoute } from 'vue-router';
 
-const { layoutState, isDesktop, isSlim, hasOverlaySubmenu } = useLayout();
+const layout = useLayoutStore();
 const route = useRoute();
 
 const props = defineProps({
@@ -24,7 +24,7 @@ const props = defineProps({
 const fullPath = computed(() => (props.item.path ? (props.parentPath ? props.parentPath + props.item.path : props.item.path) : null));
 
 const isActive = computed(() => {
-    return props.item.path ? layoutState.activePath?.startsWith(fullPath.value) : layoutState.activePath === props.item.to;
+    return props.item.path ? layout.ui.activePath?.startsWith(fullPath.value) : layout.ui.activePath === props.item.to;
 });
 
 // Keep a leaf item highlighted on its nested routes (e.g. /settings/profile); '/' only matches exactly.
@@ -42,25 +42,25 @@ const itemClick = (event, item) => {
 
     if (item.items) {
         if (isActive.value) {
-            layoutState.activePath = layoutState.activePath.replace(item.path, '');
+            layout.ui.activePath = layout.ui.activePath.replace(item.path, '');
         } else {
-            layoutState.activePath = fullPath.value;
-            layoutState.menuHoverActive = true;
+            layout.ui.activePath = fullPath.value;
+            layout.ui.menuHoverActive = true;
         }
     } else {
-        layoutState.overlayMenuActive = false;
-        layoutState.mobileMenuActive = false;
-        layoutState.menuHoverActive = false;
+        layout.ui.overlayMenuActive = false;
+        layout.ui.mobileMenuActive = false;
+        layout.ui.menuHoverActive = false;
 
-        if (hasOverlaySubmenu.value && isDesktop()) {
-            layoutState.activePath = null;
+        if (layout.hasOverlaySubmenu && layout.isDesktop()) {
+            layout.ui.activePath = null;
         }
     }
 };
 
 const onMouseEnter = () => {
-    if (isDesktop() && props.root && props.item.items && layoutState.menuHoverActive && !isActive.value) {
-        layoutState.activePath = fullPath.value;
+    if (layout.isDesktop() && props.root && props.item.items && layout.ui.menuHoverActive && !isActive.value) {
+        layout.ui.activePath = fullPath.value;
     }
 };
 </script>
@@ -76,7 +76,7 @@ const onMouseEnter = () => {
             :target="item.target"
             tabindex="0"
             @mouseenter="onMouseEnter"
-            v-tooltip.hover="isSlim && root && !isActive ? item.label : null"
+            v-tooltip.hover="layout.isSlim && root && !isActive ? item.label : null"
         >
             <i :class="item.icon" class="layout-menuitem-icon" />
             <span class="layout-menuitem-text">{{ item.label }}</span>
@@ -90,7 +90,7 @@ const onMouseEnter = () => {
             tabindex="0"
             :to="item.to"
             @mouseenter="onMouseEnter"
-            v-tooltip.hover="isSlim && root && !isActive ? item.label : null"
+            v-tooltip.hover="layout.isSlim && root && !isActive ? item.label : null"
         >
             <i :class="item.icon" class="layout-menuitem-icon" />
             <span class="layout-menuitem-text">{{ item.label }}</span>

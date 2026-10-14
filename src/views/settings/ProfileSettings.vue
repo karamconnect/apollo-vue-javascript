@@ -3,19 +3,19 @@ import SettingsRow from '@/components/settings/SettingsRow.vue';
 import SettingsSection from '@/components/settings/SettingsSection.vue';
 import { useToast } from 'primevue/usetoast';
 import { ref } from 'vue';
-import { useSettings } from './useSettings';
+import { useUserStore } from '@/stores/user';
 
 const toast = useToast();
-const { settings } = useSettings();
+const user = useUserStore();
 
-const form = ref({ ...settings.profile });
+const form = ref({ ...user.profile });
 
 function reset() {
-    form.value = { ...settings.profile };
+    form.value = { ...user.profile };
 }
 
 function save() {
-    Object.assign(settings.profile, form.value);
+    user.updateProfile(form.value);
     toast.add({ severity: 'success', summary: 'Saved', detail: 'Your profile has been updated.', life: 3000 });
 }
 </script>

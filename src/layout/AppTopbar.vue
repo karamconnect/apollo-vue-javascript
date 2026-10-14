@@ -1,18 +1,14 @@
 <script setup>
-import { useLayout } from '@/layout/composables/layout';
+import { useLayoutStore } from '@/stores/layout';
 import AppBreadcrumb from './AppBreadcrumb.vue';
 
-const { toggleMenu, layoutState } = useLayout();
-
-function showProfileSidebar() {
-    layoutState.profileSidebarVisible = !layoutState.profileSidebarVisible;
-}
+const layout = useLayoutStore();
 </script>
 
 <template>
     <div class="layout-topbar">
         <div class="topbar-start">
-            <Button type="button" class="topbar-menubutton p-trigger" @click="toggleMenu">
+            <Button type="button" class="topbar-menubutton p-trigger" @click="layout.toggleMenu">
                 <i class="pi pi-bars"></i>
             </Button>
 
@@ -28,7 +24,7 @@ function showProfileSidebar() {
                     </IconField>
                 </li>
                 <li class="topbar-profile">
-                    <Button type="button" class="topbar-sidebarbutton" @click="showProfileSidebar">
+                    <Button type="button" class="topbar-sidebarbutton" @click="layout.toggleProfileSidebar">
                         <img src="/demo/images/avatar/avatar.png" alt="Profile" />
                     </Button>
                 </li>

@@ -3,12 +3,12 @@ import SettingsRow from '@/components/settings/SettingsRow.vue';
 import SettingsSection from '@/components/settings/SettingsSection.vue';
 import { useToast } from 'primevue/usetoast';
 import { ref } from 'vue';
-import { useSettings } from './useSettings';
+import { usePreferencesStore } from '@/stores/preferences';
 
 const toast = useToast();
-const { settings } = useSettings();
+const preferences = usePreferencesStore();
 
-const form = ref({ ...settings.preferences });
+const form = ref({ ...preferences.regional });
 
 const languages = [
     { label: 'English', value: 'en' },
@@ -20,11 +20,11 @@ const languages = [
 const timezones = ['UTC', 'America/New_York', 'America/Chicago', 'America/Denver', 'America/Los_Angeles', 'Europe/London', 'Europe/Berlin', 'Asia/Tokyo'];
 
 function reset() {
-    form.value = { ...settings.preferences };
+    form.value = { ...preferences.regional };
 }
 
 function save() {
-    Object.assign(settings.preferences, form.value);
+    preferences.updateRegional(form.value);
     toast.add({ severity: 'success', summary: 'Saved', detail: 'Your preferences have been updated.', life: 3000 });
 }
 </script>

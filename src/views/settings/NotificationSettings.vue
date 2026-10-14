@@ -1,9 +1,9 @@
 <script setup>
 import SettingsRow from '@/components/settings/SettingsRow.vue';
 import SettingsSection from '@/components/settings/SettingsSection.vue';
-import { useSettings } from './useSettings';
+import { usePreferencesStore } from '@/stores/preferences';
 
-const { settings } = useSettings();
+const preferences = usePreferencesStore();
 
 const channels = [
     { key: 'email', label: 'Email notifications', description: 'Receive updates and alerts by email.' },
@@ -15,7 +15,7 @@ const channels = [
 <template>
     <SettingsSection title="Notifications" description="Changes apply immediately.">
         <SettingsRow v-for="channel in channels" :key="channel.key" :label="channel.label" :description="channel.description" :for="`notify-${channel.key}`">
-            <ToggleSwitch v-model="settings.notifications[channel.key]" :inputId="`notify-${channel.key}`" />
+            <ToggleSwitch :modelValue="preferences.notifications[channel.key]" :inputId="`notify-${channel.key}`" @update:modelValue="(enabled) => preferences.setNotification(channel.key, enabled)" />
         </SettingsRow>
     </SettingsSection>
 </template>

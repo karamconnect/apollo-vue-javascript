@@ -1,32 +1,32 @@
 <script setup>
-import { useLayout } from '@/layout/composables/layout';
+import { useLayoutStore } from '@/stores/layout';
 import { computed } from 'vue';
 import AppBreadCrumb from './AppBreadcrumb.vue';
 import AppProfileSidebar from './AppProfileSidebar.vue';
 import AppSidebar from './AppSidebar.vue';
 import AppTopbar from './AppTopbar.vue';
 
-const { layoutConfig, layoutState, hideMobileMenu } = useLayout();
+const layout = useLayoutStore();
 
 const containerClass = computed(() => {
     return {
-        'layout-light': !layoutConfig.darkTheme,
-        'layout-dark': layoutConfig.darkTheme,
-        'layout-colorscheme-menu': layoutConfig.menuTheme === 'colorScheme',
-        'layout-primarycolor-menu': layoutConfig.menuTheme === 'primaryColor',
-        'layout-transparent-menu': layoutConfig.menuTheme === 'transparent',
-        'layout-overlay': layoutConfig.menuMode === 'overlay',
-        'layout-static': layoutConfig.menuMode === 'static',
-        'layout-slim': layoutConfig.menuMode === 'slim',
-        'layout-slim-plus': layoutConfig.menuMode === 'slim-plus',
-        'layout-horizontal': layoutConfig.menuMode === 'horizontal',
-        'layout-reveal': layoutConfig.menuMode === 'reveal',
-        'layout-drawer': layoutConfig.menuMode === 'drawer',
-        'layout-overlay-active': layoutState.overlayMenuActive,
-        'layout-mobile-active': layoutState.mobileMenuActive,
-        'layout-static-inactive': layoutState.staticMenuInactive,
-        'layout-sidebar-expanded': layoutState.sidebarExpanded,
-        'layout-sidebar-anchored': layoutState.anchored
+        'layout-light': !layout.config.darkTheme,
+        'layout-dark': layout.config.darkTheme,
+        'layout-colorscheme-menu': layout.config.menuTheme === 'colorScheme',
+        'layout-primarycolor-menu': layout.config.menuTheme === 'primaryColor',
+        'layout-transparent-menu': layout.config.menuTheme === 'transparent',
+        'layout-overlay': layout.config.menuMode === 'overlay',
+        'layout-static': layout.config.menuMode === 'static',
+        'layout-slim': layout.config.menuMode === 'slim',
+        'layout-slim-plus': layout.config.menuMode === 'slim-plus',
+        'layout-horizontal': layout.config.menuMode === 'horizontal',
+        'layout-reveal': layout.config.menuMode === 'reveal',
+        'layout-drawer': layout.config.menuMode === 'drawer',
+        'layout-overlay-active': layout.ui.overlayMenuActive,
+        'layout-mobile-active': layout.ui.mobileMenuActive,
+        'layout-static-inactive': layout.ui.staticMenuInactive,
+        'layout-sidebar-expanded': layout.ui.sidebarExpanded,
+        'layout-sidebar-anchored': layout.ui.anchored
     };
 });
 </script>
@@ -43,6 +43,6 @@ const containerClass = computed(() => {
         </div>
         <AppProfileSidebar />
         <Toast />
-        <div class="layout-mask" @click="hideMobileMenu" />
+        <div class="layout-mask" @click="layout.hideMobileMenu" />
     </div>
 </template>
