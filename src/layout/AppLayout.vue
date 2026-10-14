@@ -2,7 +2,6 @@
 import { useLayout } from '@/layout/composables/layout';
 import { computed } from 'vue';
 import AppBreadCrumb from './AppBreadcrumb.vue';
-import AppConfig from './AppConfig.vue';
 import AppProfileSidebar from './AppProfileSidebar.vue';
 import AppSidebar from './AppSidebar.vue';
 import AppTopbar from './AppTopbar.vue';
@@ -43,7 +42,6 @@ const containerClass = computed(() => {
             </div>
         </div>
         <AppProfileSidebar />
-        <AppConfig />
         <Toast />
         <div class="layout-mask" @click="hideMobileMenu" />
     </div>

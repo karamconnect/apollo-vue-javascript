@@ -1,9 +1,9 @@
 <script setup>
-import RecentSalesWidget from '@/components/dashboard/ecommerce/RecentSalesWidget.vue';
-import RevenueOverviewWidget from '@/components/dashboard/ecommerce/RevenueOverviewWidget.vue';
-import SalesByCategoryWidget from '@/components/dashboard/ecommerce/SalesByCategoryWidget.vue';
-import StatsEcommerceWidget from '@/components/dashboard/ecommerce/StatsEcommerceWidget.vue';
-import TopProductsWidget from '@/components/dashboard/ecommerce/TopProductsWidget.vue';
+import RecentSalesWidget from '@/components/dashboard-widgets/RecentSalesWidget.vue';
+import RevenueOverviewWidget from '@/components/dashboard-widgets/RevenueOverviewWidget.vue';
+import SalesByCategoryWidget from '@/components/dashboard-widgets/SalesByCategoryWidget.vue';
+import StatsEcommerceWidget from '@/components/dashboard-widgets/StatsEcommerceWidget.vue';
+import TopProductsWidget from '@/components/dashboard-widgets/TopProductsWidget.vue';
 </script>
 
 <template>

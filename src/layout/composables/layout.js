@@ -13,7 +13,6 @@ const layoutConfig = reactive({
 const layoutState = reactive({
     staticMenuInactive: false,
     overlayMenuActive: false,
-    configSidebarVisible: false,
     mobileMenuActive: false,
     sidebarExpanded: false,
     menuHoverActive: false,
@@ -37,10 +36,6 @@ export function useLayout() {
         } else {
             layoutState.mobileMenuActive = !layoutState.mobileMenuActive;
         }
-    };
-
-    const toggleConfigSidebar = () => {
-        layoutState.configSidebarVisible = !layoutState.configSidebarVisible;
     };
 
     const hideMobileMenu = () => {
@@ -75,7 +70,6 @@ export function useLayout() {
         layoutConfig,
         layoutState,
         isDarkTheme,
-        toggleConfigSidebar,
         toggleMenu,
         hasOpenOverlay,
         hasOverlaySubmenu,

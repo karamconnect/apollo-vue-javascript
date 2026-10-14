@@ -6,14 +6,7 @@ import Lara from '@primeuix/themes/lara';
 import Nora from '@primeuix/themes/nora';
 import { ref } from 'vue';
 
-defineProps({
-    simple: {
-        type: Boolean,
-        default: false
-    }
-});
-
-const { layoutState, layoutConfig, isDarkTheme, toggleConfigSidebar, changeMenuMode } = useLayout();
+const { layoutConfig, isDarkTheme, changeMenuMode } = useLayout();
 
 const presets = {
     Aura,
@@ -29,6 +22,20 @@ const themeOptions = ref([
 const darkTheme = ref(layoutConfig.darkTheme);
 const menuMode = ref(layoutConfig.menuMode);
 const menuTheme = ref(layoutConfig.menuTheme);
+const menuModeOptions = ref([
+    { label: 'Static', value: 'static' },
+    { label: 'Overlay', value: 'overlay' },
+    { label: 'Slim', value: 'slim' },
+    { label: 'Slim+', value: 'slim-plus' },
+    { label: 'Reveal', value: 'reveal' },
+    { label: 'Drawer', value: 'drawer' },
+    { label: 'Horizontal', value: 'horizontal' }
+]);
+const menuThemeOptions = ref([
+    { label: 'Color Scheme', value: 'colorScheme' },
+    { label: 'Primary Color', value: 'primaryColor' },
+    { label: 'Transparent', value: 'transparent' }
+]);
 
 const primaryColors = ref([
     { name: 'noir', palette: {} },
@@ -92,7 +99,7 @@ function toggleDarkMode() {
         return;
     }
 
-    document.startViewTransition(() => executeDarkModeToggle(event));
+    document.startViewTransition(() => executeDarkModeToggle());
 }
 
 function executeDarkModeToggle() {
@@ -219,10 +226,6 @@ function onPresetChange() {
 function setMenuMode(mode) {
     changeMenuMode(mode);
 
-    if (mode === 'static') {
-        layoutState.staticMenuDesktopInactive = false;
-    }
-
     if (layoutConfig.menuTheme === 'transparent' && (mode === 'reveal' || mode === 'drawer')) {
         layoutConfig.menuTheme = 'colorScheme';
         menuTheme.value = 'colorScheme';
@@ -231,139 +234,69 @@ function setMenuMode(mode) {
 </script>
 
 <template>
-    <button v-if="simple" class="layout-config-button config-link" type="button" @click="toggleConfigSidebar">
-        <i class="pi pi-cog"></i>
-    </button>
-    <Drawer
-        v-model:visible="layoutState.configSidebarVisible"
-        position="right"
-        class="layout-config-sidebar w-80"
-        header="Settings"
-        :pt="{
-            pcCloseButton: { root: 'ml-auto' }
-        }"
-    >
-        <div class="flex flex-col gap-4">
-            <div>
-                <span class="text-lg font-semibold">Primary</span>
-                <div class="pt-2 flex gap-2 flex-wrap">
-                    <button
-                        v-for="primaryColor of primaryColors"
-                        :key="primaryColor.name"
-                        type="button"
-                        @click="updateColors('primary', primaryColor)"
-                        :class="['cursor-pointer w-6 h-6 rounded-full flex shrink-0 items-center justify-center p-0 outline-none outline-offset-1', { 'outline-primary': layoutConfig.primary === primaryColor.name }]"
-                        :style="{ backgroundColor: `${primaryColor.name === 'noir' ? 'var(--text-color)' : primaryColor.palette['500']}` }"
-                    ></button>
-                </div>
+    <div class="grid grid-cols-12 gap-6">
+        <div class="col-span-12 md:col-span-6 flex flex-col gap-2">
+            <span class="font-medium">Primary</span>
+            <div class="flex gap-2 flex-wrap">
+                <button
+                    v-for="primaryColor of primaryColors"
+                    :key="primaryColor.name"
+                    type="button"
+                    :title="primaryColor.name"
+                    :aria-label="primaryColor.name"
+                    @click="updateColors('primary', primaryColor)"
+                    :class="['cursor-pointer w-6 h-6 rounded-full flex shrink-0 items-center justify-center p-0 outline-none outline-offset-1', { 'outline-primary': layoutConfig.primary === primaryColor.name }]"
+                    :style="{ backgroundColor: `${primaryColor.name === 'noir' ? 'var(--text-color)' : primaryColor.palette['500']}` }"
+                ></button>
             </div>
-
-            <div>
-                <span class="text-lg font-semibold">Surface</span>
-                <div class="pt-2 flex gap-2 flex-wrap">
-                    <button
-                        v-for="surface of surfaces"
-                        :key="surface.name"
-                        type="button"
-                        @click="updateColors('surface', surface)"
-                        :class="[
-                            'cursor-pointer w-6 h-6 rounded-full flex shrink-0 items-center justify-center p-0 outline-none outline-offset-1',
-                            { 'outline-primary': layoutConfig.surface ? layoutConfig.surface === surface.name : isDarkTheme ? surface.name === 'zinc' : surface.name === 'slate' }
-                        ]"
-                        :style="{ backgroundColor: `${surface.palette['500']}` }"
-                    ></button>
-                </div>
-            </div>
-
-            <div>
-                <div class="flex flex-col gap-2">
-                    <span class="text-lg font-semibold">Presets</span>
-                    <SelectButton v-model="preset" @change="onPresetChange" :options="presetOptions" :allowEmpty="false" />
-                </div>
-            </div>
-
-            <div>
-                <div class="flex flex-col gap-2">
-                    <span class="text-lg font-semibold">Color Scheme</span>
-                    <SelectButton v-model="darkTheme" @change="toggleDarkMode" :options="themeOptions" optionLabel="name" optionValue="value" :allowEmpty="false" />
-                </div>
-            </div>
-
-            <template v-if="!simple">
-                <div>
-                    <div class="flex flex-col gap-2">
-                        <span class="text-lg font-semibold">Menu Type</span>
-                        <div class="flex flex-wrap flex-col gap-3">
-                            <div class="flex">
-                                <div class="flex items-center gap-2 w-1/2">
-                                    <RadioButton name="menuMode" value="static" v-model="menuMode" @update:modelValue="setMenuMode" inputId="static"></RadioButton>
-                                    <label for="static">Static</label>
-                                </div>
-
-                                <div class="flex items-center gap-2 w-1/2">
-                                    <RadioButton name="menuMode" value="overlay" v-model="menuMode" @update:modelValue="setMenuMode" inputId="overlay"></RadioButton>
-                                    <label for="overlay">Overlay</label>
-                                </div>
-                            </div>
-                            <div class="flex">
-                                <div class="flex items-center gap-2 w-1/2">
-                                    <RadioButton name="menuMode" value="slim" v-model="menuMode" @update:modelValue="setMenuMode" inputId="slim"></RadioButton>
-                                    <label for="slim">Slim</label>
-                                </div>
-                                <div class="flex items-center gap-2 w-1/2">
-                                    <RadioButton name="menuMode" value="slim-plus" v-model="menuMode" @update:modelValue="setMenuMode" inputId="slimplus"></RadioButton>
-                                    <label for="slimplus">Slim+</label>
-                                </div>
-                            </div>
-                            <div class="flex">
-                                <div class="flex items-center gap-2 w-1/2">
-                                    <RadioButton name="menuMode" value="reveal" v-model="menuMode" @update:modelValue="setMenuMode" inputId="reveal"></RadioButton>
-                                    <label for="reveal">Reveal</label>
-                                </div>
-                                <div class="flex items-center gap-2 w-1/2">
-                                    <RadioButton name="menuMode" value="drawer" v-model="menuMode" @update:modelValue="setMenuMode" inputId="drawer"></RadioButton>
-                                    <label for="drawer">Drawer</label>
-                                </div>
-                            </div>
-                            <div class="flex">
-                                <div class="flex items-center gap-2 w-1/2">
-                                    <RadioButton name="menuMode" value="horizontal" v-model="menuMode" @update:modelValue="setMenuMode" inputId="horizontal"></RadioButton>
-                                    <label for="horizontal">Horizontal</label>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div>
-                    <div class="flex flex-col gap-2">
-                        <span class="text-lg font-semibold">Menu Theme</span>
-                        <div class="flex flex-wrap flex-col gap-4">
-                            <div class="flex items-center gap-2">
-                                <RadioButton v-model="menuTheme" value="colorScheme" :checked="menuTheme === 'colorScheme'" name="menuTheme" @change="() => (layoutConfig.menuTheme = 'colorScheme')" inputId="scheme"></RadioButton>
-                                <label for="scheme">Color Scheme</label>
-                            </div>
-
-                            <div class="flex items-center gap-2">
-                                <RadioButton v-model="menuTheme" value="primaryColor" :checked="menuTheme === 'primaryColor'" name="menuTheme" @change="() => (layoutConfig.menuTheme = 'primaryColor')" inputId="primary"></RadioButton>
-                                <label for="primary">Primary Color</label>
-                            </div>
-                            <div class="flex items-center gap-2">
-                                <RadioButton
-                                    v-model="menuTheme"
-                                    value="transparent"
-                                    :checked="menuTheme === 'transparent'"
-                                    name="menuTheme"
-                                    @change="() => (layoutConfig.menuTheme = 'transparent')"
-                                    inputId="transparent"
-                                    :disabled="menuMode === 'reveal' || menuMode === 'drawer'"
-                                ></RadioButton>
-                                <label for="transparent">Transparent</label>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </template>
         </div>
-    </Drawer>
+
+        <div class="col-span-12 md:col-span-6 flex flex-col gap-2">
+            <span class="font-medium">Surface</span>
+            <div class="flex gap-2 flex-wrap">
+                <button
+                    v-for="surface of surfaces"
+                    :key="surface.name"
+                    type="button"
+                    :title="surface.name"
+                    :aria-label="surface.name"
+                    @click="updateColors('surface', surface)"
+                    :class="[
+                        'cursor-pointer w-6 h-6 rounded-full flex shrink-0 items-center justify-center p-0 outline-none outline-offset-1',
+                        { 'outline-primary': layoutConfig.surface ? layoutConfig.surface === surface.name : isDarkTheme ? surface.name === 'zinc' : surface.name === 'slate' }
+                    ]"
+                    :style="{ backgroundColor: `${surface.palette['500']}` }"
+                ></button>
+            </div>
+        </div>
+
+        <div class="col-span-12 md:col-span-6 flex flex-col gap-2">
+            <span class="font-medium">Preset</span>
+            <SelectButton v-model="preset" @change="onPresetChange" :options="presetOptions" :allowEmpty="false" />
+        </div>
+
+        <div class="col-span-12 md:col-span-6 flex flex-col gap-2">
+            <span class="font-medium">Color scheme</span>
+            <SelectButton v-model="darkTheme" @change="toggleDarkMode" :options="themeOptions" optionLabel="name" optionValue="value" :allowEmpty="false" />
+        </div>
+
+        <div class="col-span-12 md:col-span-6 flex flex-col gap-2">
+            <label for="menuMode" class="font-medium">Menu type</label>
+            <Select v-model="menuMode" inputId="menuMode" :options="menuModeOptions" optionLabel="label" optionValue="value" @update:modelValue="setMenuMode" fluid />
+        </div>
+
+        <div class="col-span-12 md:col-span-6 flex flex-col gap-2">
+            <label for="menuTheme" class="font-medium">Menu theme</label>
+            <Select
+                v-model="menuTheme"
+                inputId="menuTheme"
+                :options="menuThemeOptions"
+                optionLabel="label"
+                optionValue="value"
+                :optionDisabled="(option) => option.value === 'transparent' && (menuMode === 'reveal' || menuMode === 'drawer')"
+                @update:modelValue="(value) => (layoutConfig.menuTheme = value)"
+                fluid
+            />
+        </div>
+    </div>
 </template>

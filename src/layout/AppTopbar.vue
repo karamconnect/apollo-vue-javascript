@@ -2,7 +2,7 @@
 import { useLayout } from '@/layout/composables/layout';
 import AppBreadcrumb from './AppBreadcrumb.vue';
 
-const { toggleMenu, layoutState, toggleConfigSidebar } = useLayout();
+const { toggleMenu, layoutState } = useLayout();
 
 function showProfileSidebar() {
     layoutState.profileSidebarVisible = !layoutState.profileSidebarVisible;
@@ -26,9 +26,6 @@ function showProfileSidebar() {
                         <InputIcon class="pi pi-search" />
                         <InputText type="text" placeholder="Search" class="w-48 sm:w-full" />
                     </IconField>
-                </li>
-                <li>
-                    <Button icon="pi pi-palette" rounded @click="toggleConfigSidebar"></Button>
                 </li>
                 <li class="topbar-profile">
                     <Button type="button" class="topbar-sidebarbutton" @click="showProfileSidebar">
