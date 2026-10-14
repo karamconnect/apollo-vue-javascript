@@ -1,5 +1,5 @@
 import { effectScope, nextTick } from 'vue';
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { usePersistedRef } from '../persisted';
 
 describe('usePersistedRef', () => {
@@ -14,7 +14,10 @@ describe('usePersistedRef', () => {
         scope = effectScope();
     });
 
-    afterEach(() => scope.stop());
+    afterEach(() => {
+        scope.stop();
+        vi.restoreAllMocks();
+    });
 
     it('starts from a copy of the defaults when nothing is stored', () => {
         const defaults = { theme: 'light', nested: { a: 1 } };
@@ -68,5 +71,17 @@ describe('usePersistedRef', () => {
         await nextTick();
 
         expect(localStorage.getItem('app.prefs')).toBeNull();
+    });
+
+    it('keeps working in memory when localStorage refuses the write', async () => {
+        vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
+            throw new DOMException('Quota exceeded', 'QuotaExceededError');
+        });
+        const state = create('prefs', { theme: 'light' });
+
+        state.value.theme = 'dark';
+        await nextTick();
+
+        expect(state.value.theme).toBe('dark');
     });
 });

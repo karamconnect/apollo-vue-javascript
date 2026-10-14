@@ -21,14 +21,23 @@ function load(key, defaults) {
     return fallback;
 }
 
+function save(key, value) {
+    try {
+        localStorage.setItem(STORAGE_PREFIX + key, JSON.stringify(value));
+    } catch {
+        // storage blocked or full: keep working in memory for this session
+    }
+}
+
 /**
  * A ref backed by localStorage (key `app.<key>`), for use inside setup stores.
  * Stored objects are shallow-merged over `defaults`, so fields added later still get a value.
+ * Storage errors never throw: reads fall back to `defaults`, failed writes keep the state in memory only.
  */
 export function usePersistedRef(key, defaults) {
     const state = ref(load(key, defaults));
 
-    watch(state, (value) => localStorage.setItem(STORAGE_PREFIX + key, JSON.stringify(value)), { deep: true });
+    watch(state, (value) => save(key, value), { deep: true });
 
     return state;
 }
