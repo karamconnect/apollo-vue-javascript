@@ -1,10 +1,12 @@
 <script setup>
+import { useAvatar } from '@/auth/useAvatar';
 import { useLayoutStore } from '@/stores/layout';
 import { useLockStore } from '@/stores/lock';
 import AppBreadcrumb from './AppBreadcrumb.vue';
 
 const layout = useLayoutStore();
 const lock = useLockStore();
+const avatar = useAvatar();
 </script>
 
 <template>
@@ -30,7 +32,7 @@ const lock = useLockStore();
                 </li>
                 <li class="topbar-profile">
                     <Button type="button" class="topbar-sidebarbutton" @click="layout.toggleProfileSidebar">
-                        <img src="/demo/images/avatar/avatar.png" alt="Profile" />
+                        <img :src="avatar" alt="Profile" class="rounded-full object-cover" />
                     </Button>
                 </li>
             </ul>

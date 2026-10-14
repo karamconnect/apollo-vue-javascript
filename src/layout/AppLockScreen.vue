@@ -1,5 +1,6 @@
 <script setup>
 import { authClient } from '@/auth/client';
+import { DEFAULT_AVATAR } from '@/auth/useAvatar';
 import { useSignOut } from '@/auth/useSignOut';
 import AuthLayout from '@/components/auth/AuthLayout.vue';
 import { useLockStore } from '@/stores/lock';
@@ -46,7 +47,7 @@ async function unlock() {
     <div class="fixed inset-0 z-[5000] overflow-auto" role="dialog" aria-modal="true" aria-label="Screen locked">
         <AuthLayout title="Screen locked" subtitle="Enter your password to continue where you left off.">
             <div class="flex flex-col items-center mb-6">
-                <img src="/demo/images/avatar/avatar.png" class="w-12 h-12 mb-2" alt="" />
+                <img :src="user?.image || DEFAULT_AVATAR" class="w-12 h-12 mb-2 rounded-full object-cover" alt="" />
                 <span class="font-medium text-surface-900 dark:text-surface-0">{{ user?.name }}</span>
                 <span class="text-sm text-surface-500 dark:text-surface-400">{{ user?.email }}</span>
             </div>

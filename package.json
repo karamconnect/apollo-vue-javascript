@@ -17,6 +17,7 @@
         "@primevue/forms": "^4.5.4",
         "better-auth": "^1.7.7",
         "chart.js": "^4.3.0",
+        "filestack-js": "^4.3.9",
         "pinia": "^4.1.0",
         "primeicons": "^7.0.0",
         "primevue": "^4.5.4",
