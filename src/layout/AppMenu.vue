@@ -1,8 +1,12 @@
 <script setup>
-import { ref } from 'vue';
+import { authClient } from '@/auth/client';
+import { computed } from 'vue';
 import AppMenuItem from './AppMenuItem.vue';
 
-const model = ref([
+const session = authClient.useSession();
+
+// Hiding an item is cosmetic; the route's `meta.roles` is what keeps others out.
+const model = computed(() => [
     {
         label: 'Menu',
         icon: 'pi pi-home',
@@ -22,6 +26,12 @@ const model = ref([
                 label: 'Help',
                 icon: 'pi pi-fw pi-question-circle',
                 to: '/help'
+            },
+            {
+                label: 'Admin',
+                icon: 'pi pi-fw pi-shield',
+                to: '/admin',
+                visible: session.value.data?.user.role === 'admin'
             }
         ]
     }
