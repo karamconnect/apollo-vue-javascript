@@ -38,6 +38,10 @@ Vitest is pinned to v3 because v4+/v5 require Vite 6+ (project is on Vite 5). Te
 - **Settings** (`views/settings/`): `SettingsLayout.vue` (left nav, tab strip below `lg`) + one child route per section (`/settings/<section>`, `/settings` redirects to profile). Sections are built from `components/settings/SettingsSection.vue` (header + actions slot) and `SettingsRow.vue` (label/description + control). Profile/Preferences edit a draft and commit on Save; Notifications/Appearance apply immediately. `AppMenuItem` keeps leaf items highlighted on nested routes.
 - **Views**: top-level pages in `src/views/*.vue`. `Dashboard.vue` composes widgets from `components/dashboard-widgets/` (Chart.js charts via PrimeVue `Chart`).
 
+## CI
+
+`.github/workflows/ci.yml` runs on pull requests only (opened/synchronize/reopened): three parallel jobs — **Lint** (`npm run lint:check`, the non-fixing variant of `npm run lint`), **Unit tests** (`npm test`) and **Build** (`npm run build`) — each doing `npm ci` with Node from `.nvmrc`. Keep `.nvmrc` in sync when changing Node versions, and keep job `name:`s stable (they are the status-check names).
+
 ## Deployment
 
 Vercel (`vercel.json`): SPA rewrite to `/index.html`; build runs the submodule workaround then `npm run build`.

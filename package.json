@@ -9,6 +9,7 @@
         "test": "vitest run",
         "test:watch": "vitest",
         "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs --fix --ignore-path .gitignore",
+        "lint:check": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs --ignore-path .gitignore",
         "format": "prettier --write \"**/*.{js,vue,d.ts}\""
     },
     "dependencies": {
