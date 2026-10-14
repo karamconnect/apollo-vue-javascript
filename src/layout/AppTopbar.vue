@@ -1,8 +1,10 @@
 <script setup>
 import { useLayoutStore } from '@/stores/layout';
+import { useLockStore } from '@/stores/lock';
 import AppBreadcrumb from './AppBreadcrumb.vue';
 
 const layout = useLayoutStore();
+const lock = useLockStore();
 </script>
 
 <template>
@@ -22,6 +24,9 @@ const layout = useLayoutStore();
                         <InputIcon class="pi pi-search" />
                         <InputText type="text" placeholder="Search" class="w-48 sm:w-full" />
                     </IconField>
+                </li>
+                <li>
+                    <Button type="button" icon="pi pi-lock" text rounded severity="secondary" aria-label="Lock screen" title="Lock screen" @click="lock.lock" />
                 </li>
                 <li class="topbar-profile">
                     <Button type="button" class="topbar-sidebarbutton" @click="layout.toggleProfileSidebar">

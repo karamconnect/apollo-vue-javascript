@@ -135,7 +135,7 @@
                         <div class="text-2xl mb-4 font-medium">Security</div>
                         <ul class="list-none m-0 p-0 text-center">
                             <li class="leading-normal mb-1">
-                                <a class="text-surface-500 dark:text-surface-400 hover:text-primary cursor-pointer">Lorem ipsum dolor</a>
+                                <router-link :to="{ name: 'terms' }" class="text-surface-500 dark:text-surface-400 hover:text-primary">Terms and Conditions</router-link>
                             </li>
                             <li class="leading-normal mb-1">
                                 <a class="text-surface-500 dark:text-surface-400 hover:text-primary cursor-pointer">Consectetur adipiscing elit</a>

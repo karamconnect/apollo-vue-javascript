@@ -1,10 +1,15 @@
 <script setup>
+import { authClient } from '@/auth/client';
+import { useSignOut } from '@/auth/useSignOut';
+import { useLockStore } from '@/stores/lock';
 import { useLayoutStore } from '@/stores/layout';
 import { useTodoStore } from '@/stores/todos';
 import { computed, ref, watch } from 'vue';
 
 const layout = useLayoutStore();
 const todos = useTodoStore();
+const lock = useLockStore();
+const session = authClient.useSession();
 
 const newTodo = ref('');
 
@@ -50,6 +55,18 @@ function eventStatus(event) {
 
 function closeSidebar() {
     layout.ui.profileSidebarVisible = false;
+}
+
+const signOutAndRedirect = useSignOut();
+
+function signOut() {
+    closeSidebar();
+    signOutAndRedirect();
+}
+
+function lockScreen() {
+    closeSidebar();
+    lock.lock();
 }
 </script>
 
@@ -107,10 +124,19 @@ function closeSidebar() {
                 </ul>
             </section>
 
-            <router-link to="/settings" class="flex items-center gap-2 text-surface-500 dark:text-surface-400 hover:text-primary" @click="closeSidebar">
-                <i class="pi pi-cog"></i>
-                <span>Settings</span>
-            </router-link>
+            <div class="flex flex-col gap-3 pt-4 border-t border-surface-200 dark:border-surface-700">
+                <span v-if="session.data" class="text-sm text-surface-500 dark:text-surface-400 truncate">Signed in as {{ session.data.user.email }}</span>
+                <div class="flex items-center justify-between">
+                    <router-link to="/settings" class="flex items-center gap-2 text-surface-500 dark:text-surface-400 hover:text-primary" @click="closeSidebar">
+                        <i class="pi pi-cog"></i>
+                        <span>Settings</span>
+                    </router-link>
+                    <div class="flex gap-1">
+                        <Button label="Lock" icon="pi pi-lock" text size="small" severity="secondary" @click="lockScreen" />
+                        <Button label="Sign out" icon="pi pi-sign-out" text size="small" severity="secondary" @click="signOut" />
+                    </div>
+                </div>
+            </div>
         </div>
     </Drawer>
 </template>

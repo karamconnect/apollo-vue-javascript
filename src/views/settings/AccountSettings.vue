@@ -1,15 +1,21 @@
 <script setup>
+import { authClient } from '@/auth/client';
+import { useSignOut } from '@/auth/useSignOut';
 import SettingsRow from '@/components/settings/SettingsRow.vue';
 import SettingsSection from '@/components/settings/SettingsSection.vue';
+import { useUserStore } from '@/stores/user';
 import { zodResolver } from '@primevue/forms/resolvers/zod';
 import { useConfirm } from 'primevue/useconfirm';
 import { useToast } from 'primevue/usetoast';
 import { computed, ref } from 'vue';
+import { useRouter } from 'vue-router';
 import { changePasswordSchema, MIN_PASSWORD_LENGTH } from './password-schema';
 
-// Placeholder: nothing here is wired to an auth backend yet.
+// Talks to Better Auth through `authClient` (answered by the in-browser mock until a server exists).
 const toast = useToast();
 const confirm = useConfirm();
+const router = useRouter();
+const user = useUserStore();
 
 const passwordResolver = zodResolver(changePasswordSchema);
 const emptyPasswords = { currentPassword: '', newPassword: '', confirmPassword: '' };
@@ -22,19 +28,44 @@ function showError(field) {
     return Boolean(field?.invalid && field?.dirty);
 }
 
-function onPasswordSubmit({ valid }) {
+const updatingPassword = ref(false);
+
+async function onPasswordSubmit({ valid, values }) {
     if (!valid) return;
 
-    notAvailable();
+    updatingPassword.value = true;
+    const { error } = await authClient.changePassword({ currentPassword: values.currentPassword, newPassword: values.newPassword, revokeOtherSessions: true });
+    updatingPassword.value = false;
+
+    if (error) {
+        toastError(error, 'Password not changed');
+        return;
+    }
+
+    toast.add({ severity: 'success', summary: 'Password updated', detail: 'Other devices have been signed out.', life: 3000 });
     passwordFormKey.value++;
 }
+
+const signOut = useSignOut();
 
 const DELETE_PHRASE = 'DELETE';
 const deleteConfirmation = ref('');
 const canDelete = computed(() => deleteConfirmation.value === DELETE_PHRASE);
 
-function notAvailable() {
-    toast.add({ severity: 'info', summary: 'Not available', detail: 'Account management is not connected yet.', life: 3000 });
+function toastError(error, summary) {
+    toast.add({ severity: 'error', summary, detail: error.message || 'Something went wrong. Please try again.', life: 5000 });
+}
+
+async function deleteAccount() {
+    const { error } = await authClient.deleteUser();
+
+    if (error) {
+        toastError(error, 'Account not deleted');
+        return;
+    }
+
+    user.updateProfile({ firstName: '', lastName: '', email: '', bio: '' });
+    router.push({ name: 'login' });
 }
 
 function confirmDeleteAccount(event) {
@@ -45,7 +76,7 @@ function confirmDeleteAccount(event) {
         target: event.currentTarget,
         header: 'Delete account?',
         message: 'This permanently removes your account and all of its data. This cannot be undone.',
-        accept: notAvailable
+        accept: deleteAccount
     });
 }
 
@@ -102,12 +133,12 @@ function submitDelete(acceptCallback) {
                     <Message v-if="showError($form.confirmPassword)" id="confirm-password-error" severity="error" size="small" variant="simple">{{ $form.confirmPassword.error?.message }}</Message>
                 </div>
 
-                <Button type="submit" label="Update password" class="self-start" :disabled="!$form.valid" />
+                <Button type="submit" label="Update password" class="self-start" :disabled="!$form.valid" :loading="updatingPassword" />
             </Form>
         </SettingsRow>
 
         <SettingsRow label="Sessions" description="Sign out of this device.">
-            <Button label="Sign out" icon="pi pi-sign-out" severity="secondary" outlined @click="notAvailable" />
+            <Button label="Sign out" icon="pi pi-sign-out" severity="secondary" outlined @click="signOut" />
         </SettingsRow>
 
         <SettingsRow label="Delete account" description="Permanently remove your account and data.">
