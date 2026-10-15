@@ -1,12 +1,25 @@
 <script setup>
 import { useAvatar } from '@/auth/useAvatar';
 import { useLayoutStore } from '@/stores/layout';
+import { usePageSearch } from '@/search/usePageSearch';
 import { useLockStore } from '@/stores/lock';
+import { shallowRef } from 'vue';
+import { useRouter } from 'vue-router';
 import AppBreadcrumb from './AppBreadcrumb.vue';
 
 const layout = useLayoutStore();
 const lock = useLockStore();
 const avatar = useAvatar();
+const router = useRouter();
+
+// Fuzzy page search (Fuse.js): typing "dark mode" or "pasword" finds the matching settings page.
+const { query, results } = usePageSearch();
+const selected = shallowRef(null);
+
+function goToPage({ value }) {
+    router.push({ name: value.name });
+    selected.value = null;
+}
 </script>
 
 <template>
@@ -23,8 +36,27 @@ const avatar = useAvatar();
             <ul class="topbar-menu">
                 <li class="topbar-search">
                     <IconField>
-                        <InputIcon class="pi pi-search" />
-                        <InputText type="text" placeholder="Search" class="w-48 sm:w-full" />
+                        <InputIcon class="pi pi-search z-10" />
+                        <AutoComplete
+                            v-model="selected"
+                            :suggestions="results"
+                            optionLabel="title"
+                            placeholder="Search"
+                            ariaLabel="Search pages"
+                            :delay="100"
+                            autoOptionFocus
+                            emptySearchMessage="No matching pages"
+                            inputClass="w-48 sm:w-full pl-10!"
+                            @complete="query = $event.query"
+                            @option-select="goToPage"
+                        >
+                            <template #option="{ option }">
+                                <div class="flex items-center gap-2">
+                                    <i :class="option.icon" class="text-surface-500 dark:text-surface-400"></i>
+                                    <span>{{ option.title }}</span>
+                                </div>
+                            </template>
+                        </AutoComplete>
                     </IconField>
                 </li>
                 <li>
