@@ -1,6 +1,7 @@
 <script setup>
 import { authClient } from '@/auth/client';
 import { useAvatar } from '@/auth/useAvatar';
+import PhoneInput from '@/components/forms/PhoneInput.vue';
 import SettingsRow from '@/components/settings/SettingsRow.vue';
 import SettingsSection from '@/components/settings/SettingsSection.vue';
 import { useUserStore } from '@/stores/user';
@@ -92,6 +93,13 @@ async function changePhoto() {
                     <InputText id="email" name="email" type="email" autocomplete="email" :aria-describedby="$form.email?.invalid ? 'email-error' : undefined" fluid />
                     <Message v-if="$form.email?.invalid" id="email-error" severity="error" size="small" variant="simple">{{ $form.email.error?.message }}</Message>
                 </div>
+            </SettingsRow>
+
+            <SettingsRow label="Phone" description="Optional. Pick the country, then type the number." for="phone">
+                <FormField v-slot="$field" name="phone" class="flex flex-col gap-1">
+                    <PhoneInput :modelValue="$field.value" inputId="phone" :invalid="$field.invalid" :ariaDescribedby="$field.invalid ? 'phone-error' : undefined" @update:modelValue="(value) => $field.onInput({ value })" @blur="$field.onBlur" />
+                    <Message v-if="$field.invalid" id="phone-error" severity="error" size="small" variant="simple">{{ $field.error?.message }}</Message>
+                </FormField>
             </SettingsRow>
 
             <SettingsRow label="Bio" description="A short introduction." for="bio">

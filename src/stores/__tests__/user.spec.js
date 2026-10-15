@@ -12,7 +12,7 @@ describe('user store', () => {
     it('starts with an empty profile', () => {
         const user = useUserStore();
 
-        expect(user.profile).toEqual({ firstName: '', lastName: '', email: '', bio: '' });
+        expect(user.profile).toEqual({ firstName: '', lastName: '', email: '', phone: '', bio: '' });
     });
 
     describe('displayName', () => {
@@ -43,7 +43,7 @@ describe('user store', () => {
         user.updateProfile({ firstName: 'Ada', bio: 'Mathematician' });
         user.updateProfile({ bio: 'Writer' });
 
-        expect(user.profile).toEqual({ firstName: 'Ada', lastName: '', email: '', bio: 'Writer' });
+        expect(user.profile).toEqual({ firstName: 'Ada', lastName: '', email: '', phone: '', bio: 'Writer' });
     });
 
     it('persists the profile across store instances', async () => {
