@@ -3,6 +3,7 @@ import { createApp } from 'vue';
 import App from './App.vue';
 import router from './router';
 
+import { installFlags } from '@/flags';
 import { loadPreset } from '@/layout/theme';
 import { useLayoutStore } from '@/stores/layout';
 import PrimeVue from 'primevue/config';
@@ -16,6 +17,7 @@ const app = createApp(App);
 
 app.use(createPinia());
 app.use(router);
+installFlags(app);
 
 const layout = useLayoutStore();
 

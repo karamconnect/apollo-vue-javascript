@@ -6,6 +6,7 @@ import SettingsSection from '@/components/settings/SettingsSection.vue';
 import { useUserStore } from '@/stores/user';
 import { avatarUrl, isDemoFilestackKey, openAvatarPicker } from '@/service/filestack';
 import { zodResolver } from '@primevue/forms/resolvers/zod';
+import { useFlags } from 'flagsmith-vue';
 import { useToast } from 'primevue/usetoast';
 import { computed, ref } from 'vue';
 import { profileSchema } from './profile-schema';
@@ -14,6 +15,7 @@ const toast = useToast();
 const user = useUserStore();
 const session = authClient.useSession();
 const avatar = useAvatar();
+const { profile_photo_upload: photoUploadFlag } = useFlags(['profile_photo_upload']);
 
 const resolver = zodResolver(profileSchema);
 
@@ -70,7 +72,7 @@ async function changePhoto() {
 <template>
     <Form :key="formKey" v-slot="$form" :initialValues :resolver :validateOnValueUpdate="false" validateOnBlur novalidate @submit="onSubmit">
         <SettingsSection title="Profile" description="How you appear to others.">
-            <SettingsRow label="Photo" :description="isDemoFilestackKey ? 'Square, up to 10 MB. Saved right away. Demo mode: uploads go to Filestack\'s shared demo account.' : 'Square, up to 10 MB. Saved right away.'">
+            <SettingsRow v-if="photoUploadFlag?.enabled" label="Photo" :description="isDemoFilestackKey ? 'Square, up to 10 MB. Saved right away. Demo mode: uploads go to Filestack\'s shared demo account.' : 'Square, up to 10 MB. Saved right away.'">
                 <div class="flex flex-wrap items-center gap-4">
                     <Avatar :image="avatar" size="xlarge" shape="circle" class="overflow-hidden" />
                     <Button type="button" label="Change photo" icon="pi pi-upload" severity="secondary" outlined :loading="photoBusy" @click="changePhoto" />
