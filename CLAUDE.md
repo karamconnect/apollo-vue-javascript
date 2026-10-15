@@ -18,6 +18,8 @@ Lockfile is `package-lock.json` → npm.
 - `npm test` — Vitest (run once); `npm run test:watch` for watch mode
 - Single file: `npx vitest run src/stores/__tests__/layout.spec.js`; single test: add `-t "<name>"`
 
+`typescript` is a devDependency pinned to 5.9 even though the code is JavaScript. Several packages ask for TypeScript (filestack-js → ts-node, pinia, vue), and npm would otherwise install TypeScript 7, whose per-platform binary packages were missing from the lockfile and broke `npm ci` in CI. After changing dependencies, check that `npm ci` succeeds in a clean copy.
+
 Vitest is pinned to v3 because v4+/v5 require Vite 6+ (project is on Vite 5). Test environment is jsdom (`test` block in `vite.config.mjs`). Store tests live in `src/stores/__tests__/`: fresh `setActivePinia(createPinia())` and `localStorage.clear()` per test; `@primeuix/themes` is mocked in the layout tests. Don't `structuredClone` store state in tests (reactive proxies can't be cloned).
 
 ## Conventions
