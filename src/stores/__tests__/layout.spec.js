@@ -1,4 +1,7 @@
-import { getPresetExt, presets, surfaces } from '@/layout/theme';
+import { getPresetExt, loadPreset, surfaces } from '@/layout/theme';
+import Aura from '@primeuix/themes/aura';
+import Lara from '@primeuix/themes/lara';
+import Nora from '@primeuix/themes/nora';
 import { createPinia, setActivePinia } from 'pinia';
 import { nextTick } from 'vue';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -186,33 +189,45 @@ describe('layout store', () => {
         expect(theme.updateSurfacePalette).toHaveBeenCalledWith(surfaces.find((surface) => surface.name === 'zinc').palette);
     });
 
-    it('setPreset rebuilds the theme from the chosen preset', () => {
-        layout.setPreset('Lara');
+    it('setPreset rebuilds the theme from the chosen preset', async () => {
+        await layout.setPreset('Lara');
 
         expect(layout.config.preset).toBe('Lara');
-        expect(theme.chain.preset).toHaveBeenNthCalledWith(1, presets.Lara);
+        expect(theme.chain.preset).toHaveBeenNthCalledWith(1, Lara);
         expect(theme.chain.use).toHaveBeenCalledWith({ useDefaultOptions: true });
     });
 
-    it('applyTheme restores a saved theme, including dark mode', () => {
+    it('applyTheme restores a saved theme, including dark mode', async () => {
         localStorage.setItem('app.layout.config', JSON.stringify({ preset: 'Nora', primary: 'rose', surface: 'stone', darkTheme: true }));
         setActivePinia(createPinia());
 
-        useLayoutStore().applyTheme();
+        await useLayoutStore().applyTheme();
 
         expect(document.documentElement.classList.contains('app-dark')).toBe(true);
-        expect(theme.chain.preset).toHaveBeenNthCalledWith(1, presets.Nora);
+        expect(theme.chain.preset).toHaveBeenNthCalledWith(1, Nora);
         expect(theme.chain.preset).toHaveBeenNthCalledWith(2, getPresetExt('rose'));
         expect(theme.chain.surfacePalette).toHaveBeenCalledWith(surfaces.find((surface) => surface.name === 'stone').palette);
     });
 
-    it('applyTheme falls back to Aura for an unknown saved preset', () => {
+    it('applyTheme falls back to Aura for an unknown saved preset', async () => {
         localStorage.setItem('app.layout.config', JSON.stringify({ preset: 'Removed' }));
         setActivePinia(createPinia());
 
-        useLayoutStore().applyTheme();
+        await useLayoutStore().applyTheme();
 
-        expect(theme.chain.preset).toHaveBeenNthCalledWith(1, presets.Aura);
+        expect(theme.chain.preset).toHaveBeenNthCalledWith(1, Aura);
+    });
+
+    it('applies only the last preset when switching again before the first one loads', async () => {
+        await Promise.all([layout.setPreset('Lara'), layout.setPreset('Nora')]);
+
+        expect(theme.$t).toHaveBeenCalledTimes(1);
+        expect(theme.chain.preset).toHaveBeenNthCalledWith(1, Nora);
+    });
+
+    it('loadPreset resolves each preset by name', async () => {
+        expect(await loadPreset('Lara')).toBe(Lara);
+        expect(await loadPreset('Removed')).toBe(Aura);
     });
 
     it('persists appearance but not transient UI state', async () => {

@@ -1,9 +1,20 @@
-import Aura from '@primeuix/themes/aura';
-import Lara from '@primeuix/themes/lara';
-import Nora from '@primeuix/themes/nora';
+// Theme presets offered in Settings > Appearance. Each is ~100 kB, so they load on demand:
+// only the active one is downloaded at startup, the others when the user switches.
+const presetLoaders = {
+    Aura: () => import('@primeuix/themes/aura'),
+    Lara: () => import('@primeuix/themes/lara'),
+    Nora: () => import('@primeuix/themes/nora')
+};
 
-// Theme presets and palettes offered in Settings > Appearance.
-export const presets = { Aura, Lara, Nora };
+export const DEFAULT_PRESET = 'Aura';
+export const presetNames = Object.keys(presetLoaders);
+
+/** Resolves to the named preset, or the default for an unknown name (e.g. a stale saved value). */
+export async function loadPreset(name) {
+    const load = presetLoaders[name] ?? presetLoaders[DEFAULT_PRESET];
+
+    return (await load()).default;
+}
 
 export const primaryColors = [
     { name: 'noir', palette: {} },

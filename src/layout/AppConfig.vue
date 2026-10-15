@@ -1,12 +1,12 @@
 <script setup>
-import { presets, primaryColors, surfaces } from '@/layout/theme';
+import { presetNames, primaryColors, surfaces } from '@/layout/theme';
 import { useLayoutStore } from '@/stores/layout';
 import { useRoute } from 'vue-router';
 
 const layout = useLayoutStore();
 const route = useRoute();
 
-const presetOptions = Object.keys(presets);
+const presetOptions = presetNames;
 const themeOptions = [
     { name: 'Light', value: false },
     { name: 'Dark', value: true }

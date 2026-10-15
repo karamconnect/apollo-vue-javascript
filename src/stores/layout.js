@@ -1,4 +1,4 @@
-import { getPresetExt, presets, surfaces } from '@/layout/theme';
+import { getPresetExt, loadPreset, surfaces } from '@/layout/theme';
 import { $t, updatePreset, updateSurfacePalette } from '@primeuix/themes';
 import { acceptHMRUpdate, defineStore } from 'pinia';
 import { computed, ref } from 'vue';
@@ -108,20 +108,23 @@ export const useLayoutStore = defineStore('layout', () => {
 
     function setPreset(name) {
         config.value.preset = name;
-        applyTheme();
+        return applyTheme();
     }
 
     // Applies the full persisted theme; call once after PrimeVue is installed and whenever the preset changes.
-    function applyTheme() {
+    // Async because the preset is loaded on demand (see layout/theme.js).
+    async function applyTheme() {
         document.documentElement.classList.toggle('app-dark', config.value.darkTheme);
+
+        const name = config.value.preset;
+        const preset = await loadPreset(name);
+
+        // A newer preset was picked while this one was loading; let that call apply it.
+        if (config.value.preset !== name) return;
 
         const surfacePalette = surfaces.find((surface) => surface.name === config.value.surface)?.palette;
 
-        $t()
-            .preset(presets[config.value.preset] ?? presets.Aura)
-            .preset(getPresetExt(config.value.primary))
-            .surfacePalette(surfacePalette)
-            .use({ useDefaultOptions: true });
+        $t().preset(preset).preset(getPresetExt(config.value.primary)).surfacePalette(surfacePalette).use({ useDefaultOptions: true });
     }
 
     return {
