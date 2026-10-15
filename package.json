@@ -37,6 +37,7 @@
         "@tailwindcss/vite": "^4.1.17",
         "@vitejs/plugin-vue": "^5.0.5",
         "@vue/eslint-config-prettier": "^9.0.0",
+        "@vue/test-utils": "^2.5.1",
         "eslint": "^8.57.0",
         "eslint-plugin-vue": "^9.23.0",
         "jsdom": "^29.1.1",

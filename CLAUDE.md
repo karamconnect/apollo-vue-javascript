@@ -20,7 +20,7 @@ Lockfile is `package-lock.json` → npm.
 
 `typescript` is a devDependency pinned to 5.9 even though the code is JavaScript. Several packages ask for TypeScript (filestack-js → ts-node, pinia, vue), and npm would otherwise install TypeScript 7, whose per-platform binary packages were missing from the lockfile and broke `npm ci` in CI. After changing dependencies, check that `npm ci` succeeds in a clean copy.
 
-Vitest is pinned to v3 because v4+/v5 require Vite 6+ (project is on Vite 5). Test environment is jsdom (`test` block in `vite.config.mjs`). Store tests live in `src/stores/__tests__/`: fresh `setActivePinia(createPinia())` and `localStorage.clear()` per test; `@primeuix/themes` is mocked in the layout tests. Don't `structuredClone` store state in tests (reactive proxies can't be cloned).
+Vitest is pinned to v3 because v4+/v5 require Vite 6+ (project is on Vite 5). Test environment is jsdom (`test` block in `vite.config.mjs`). Store tests live in `src/stores/__tests__/`: fresh `setActivePinia(createPinia())` and `localStorage.clear()` per test; `@primeuix/themes` is mocked in the layout tests. Don't `structuredClone` store state in tests (reactive proxies can't be cloned). Component tests use Vue Test Utils (`@vue/test-utils`) through `mountWithApp(component, { path, routes, props })` from `src/test/mount.js`. It sets up a fresh Pinia, PrimeVue (no theme) and a memory router at `path`; pass named routes so `RouterLink`s resolve. PrimeVue components resolve through the same auto-import as the app. Put tests in `__tests__/` next to the code, and use `flushPromises()` after a form submit (the Zod resolver is async).
 
 ## Conventions
 
