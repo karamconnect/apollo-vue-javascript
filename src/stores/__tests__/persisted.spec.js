@@ -84,4 +84,15 @@ describe('usePersistedRef', () => {
 
         expect(state.value.theme).toBe('dark');
     });
+
+    it('follows changes made in another tab', async () => {
+        const state = create('lock', { locked: false });
+        const newValue = JSON.stringify({ locked: true });
+
+        localStorage.setItem('app.lock', newValue);
+        window.dispatchEvent(new StorageEvent('storage', { key: 'app.lock', newValue, storageArea: localStorage }));
+        await nextTick();
+
+        expect(state.value.locked).toBe(true);
+    });
 });

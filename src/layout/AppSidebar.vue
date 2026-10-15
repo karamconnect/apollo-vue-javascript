@@ -1,19 +1,17 @@
 <script setup>
 import { useLayoutStore } from '@/stores/layout';
-import { nextTick, onBeforeUnmount, ref, watch } from 'vue';
+import { onClickOutside, useIntersectionObserver, useMediaQuery, useTimeoutFn } from '@vueuse/core';
+import { nextTick, ref, shallowRef, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import AppMenu from './AppMenu.vue';
 
 const BREAKPOINT = 992;
-const mediaQuery = window.matchMedia(`(min-width: ${BREAKPOINT}px)`);
 const layout = useLayoutStore();
 const route = useRoute();
 const menuContainerRef = ref(null);
 const sidebarRef = ref(null);
-
-let timeout = null;
-let observer = null;
-let outsideClickListener = null;
+const isDesktopScreen = useMediaQuery(`(min-width: ${BREAKPOINT}px)`);
+const activeRootItem = shallowRef(null); // root item of the open overlay submenu, watched for scrolling out of view
 
 watch(
     () => route.path,
@@ -28,79 +26,67 @@ watch(
     { immediate: true }
 );
 
-watch(
-    () => layout.hasOpenOverlay,
-    (newVal) => {
-        if (layout.isDesktop()) {
-            if (newVal) bindOutsideClickListener();
-            else unbindOutsideClickListener();
-        }
-    }
-);
-
-watch(
-    () => layout.hasOpenOverlaySubmenu,
-    (newValue) => {
-        if (layout.isDesktop()) {
-            if (newValue) nextTick(setupIntersectionObserver);
-            else unbindObserver();
-        }
-    }
-);
-
-const screenChangeListener = () => {
+// Crossing the desktop breakpoint resets overlay submenus (slim, horizontal, …).
+watch(isDesktopScreen, () => {
     if (layout.hasOverlaySubmenu) {
         layout.ui.activePath = layout.isDesktop() ? null : route.path;
         layout.ui.menuHoverActive = false;
-        unbindOutsideClickListener();
-        unbindObserver();
+        activeRootItem.value = null;
     }
-};
+});
 
-const bindOutsideClickListener = () => {
-    if (!outsideClickListener) {
-        outsideClickListener = (event) => {
-            if (isOutsideClicked(event)) {
-                layout.ui.overlayMenuActive = false;
+// Clicking outside the sidebar (and the topbar menu button) closes an open overlay menu or submenu.
+onClickOutside(
+    sidebarRef,
+    () => {
+        if (!layout.isDesktop() || !layout.hasOpenOverlay) return;
 
-                if (layout.hasOverlaySubmenu) {
-                    layout.ui.activePath = null;
-                    layout.ui.menuHoverActive = false;
-                }
-            }
-        };
+        layout.ui.overlayMenuActive = false;
 
-        document.addEventListener('click', outsideClickListener);
+        if (layout.hasOverlaySubmenu) {
+            layout.ui.activePath = null;
+            layout.ui.menuHoverActive = false;
+        }
+    },
+    { ignore: ['.topbar-menubutton'] }
+);
+
+// Close an open overlay submenu once its root item scrolls out of the menu.
+watch(
+    () => layout.hasOpenOverlaySubmenu,
+    async (open) => {
+        if (!open || !layout.isDesktop()) {
+            activeRootItem.value = null;
+            return;
+        }
+
+        await nextTick();
+        activeRootItem.value = menuContainerRef.value?.querySelector('.layout-root-menuitem.active-menuitem') ?? null;
     }
-};
+);
 
-const unbindOutsideClickListener = () => {
-    if (outsideClickListener) {
-        document.removeEventListener('click', outsideClickListener);
-        outsideClickListener = null;
-    }
-};
+useIntersectionObserver(
+    activeRootItem,
+    (entries) => {
+        if (entries.some((entry) => !entry.isIntersecting) && layout.isDesktop() && layout.hasOverlaySubmenu && layout.ui.activePath) {
+            layout.ui.activePath = null;
+        }
+    },
+    { root: menuContainerRef, threshold: 0 }
+);
 
-function isOutsideClicked(event) {
-    const topbarButtonEl = document.querySelector('.topbar-menubutton');
-
-    return !(sidebarRef.value?.isSameNode(event.target) || sidebarRef.value?.contains(event.target) || topbarButtonEl?.isSameNode(event.target) || topbarButtonEl?.contains(event.target));
-}
+// Reveal / drawer modes: expand on hover, collapse shortly after the pointer leaves.
+const { start: scheduleCollapse, stop: cancelCollapse, isPending: collapsePending } = useTimeoutFn(() => (layout.ui.sidebarExpanded = false), 300, { immediate: false });
 
 const onMouseEnter = () => {
     if (!layout.ui.anchored) {
-        if (timeout) {
-            clearTimeout(timeout);
-            timeout = null;
-        }
+        cancelCollapse();
         layout.ui.sidebarExpanded = true;
     }
 };
 
 const onMouseLeave = () => {
-    if (!layout.ui.anchored && !timeout) {
-        timeout = setTimeout(() => (layout.ui.sidebarExpanded = false), 300);
-    }
+    if (!layout.ui.anchored && !collapsePending.value) scheduleCollapse();
 };
 
 const onAnchorToggle = () => {
@@ -120,48 +106,6 @@ const onMenuScroll = () => {
         layout.ui.activePath = null;
     }
 };
-
-const setupIntersectionObserver = () => {
-    if (!menuContainerRef.value) return;
-
-    if (observer) {
-        observer.disconnect();
-    }
-
-    const activeMenuItem = menuContainerRef.value.querySelector('.layout-root-menuitem.active-menuitem');
-    if (!activeMenuItem) return;
-
-    observer = new IntersectionObserver(
-        (entries) => {
-            entries.forEach((entry) => {
-                if (layout.isDesktop() && !entry.isIntersecting && layout.hasOverlaySubmenu && layout.ui.activePath) {
-                    layout.ui.activePath = null;
-                }
-            });
-        },
-        {
-            root: menuContainerRef.value,
-            threshold: 0
-        }
-    );
-
-    observer.observe(activeMenuItem);
-};
-
-const unbindObserver = () => {
-    if (observer) {
-        observer.disconnect();
-        observer = null;
-    }
-};
-
-mediaQuery.addEventListener('change', screenChangeListener);
-
-onBeforeUnmount(() => {
-    unbindOutsideClickListener();
-    unbindObserver();
-    mediaQuery.removeEventListener('change', screenChangeListener);
-});
 </script>
 
 <template>

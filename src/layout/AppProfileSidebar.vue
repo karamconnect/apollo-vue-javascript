@@ -3,7 +3,8 @@ import { authClient } from '@/auth/client';
 import { useSignOut } from '@/auth/useSignOut';
 import { useLayoutStore } from '@/stores/layout';
 import { useTodoStore } from '@/stores/todos';
-import { computed, ref, watch } from 'vue';
+import { useIntervalFn, useNow } from '@vueuse/core';
+import { computed, ref } from 'vue';
 
 const layout = useLayoutStore();
 const todos = useTodoStore();
@@ -31,14 +32,8 @@ const events = ref([
     { id: 4, title: 'Sprint planning', location: 'Zoom', start: todayAt(15), end: todayAt(16) }
 ]);
 
-const now = ref(new Date());
-
-watch(
-    () => layout.ui.profileSidebarVisible,
-    (visible) => {
-        if (visible) now.value = new Date();
-    }
-);
+// Ticks once a minute (useNow defaults to every animation frame), so event statuses stay current while open.
+const now = useNow({ scheduler: (update) => useIntervalFn(update, 60_000) });
 
 const todayLabel = computed(() => now.value.toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric' }));
 

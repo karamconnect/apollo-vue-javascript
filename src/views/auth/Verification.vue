@@ -2,7 +2,8 @@
 import { authClient, isMockAuth } from '@/auth/client';
 import AuthLayout from '@/components/auth/AuthLayout.vue';
 import { safeRedirect } from '@/router/guard';
-import { computed, onBeforeUnmount, ref } from 'vue';
+import { useCountdown } from '@vueuse/core';
+import { computed, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 
 // Email verification with a one-time code (Better Auth emailOTP plugin). Shown after sign-up;
@@ -22,8 +23,7 @@ const code = ref('');
 const loading = ref(false);
 const error = ref('');
 const resendNotice = ref('');
-const cooldown = ref(0);
-let timer;
+const { remaining: cooldown, start: startCooldown } = useCountdown(0);
 
 function continueToApp() {
     router.replace(safeRedirect(route.query.redirect));
@@ -60,15 +60,8 @@ async function resend() {
     }
 
     resendNotice.value = 'A new code is on its way.';
-    cooldown.value = RESEND_COOLDOWN_SECONDS;
-    clearInterval(timer);
-    timer = setInterval(() => {
-        cooldown.value--;
-        if (cooldown.value <= 0) clearInterval(timer);
-    }, 1000);
+    startCooldown(RESEND_COOLDOWN_SECONDS);
 }
-
-onBeforeUnmount(() => clearInterval(timer));
 </script>
 
 <template>
