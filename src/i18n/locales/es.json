@@ -1,0 +1,50 @@
+{
+    "nav": {
+        "menu": "Menú",
+        "dashboard": "Panel",
+        "settings": "Ajustes",
+        "help": "Ayuda",
+        "admin": "Administración",
+        "profile": "Perfil",
+        "account": "Cuenta",
+        "preferences": "Preferencias",
+        "notifications": "Notificaciones",
+        "appearance": "Apariencia",
+        "terms": "Términos y condiciones"
+    },
+    "topbar": {
+        "search": "Buscar",
+        "searchPages": "Buscar páginas",
+        "noMatches": "No hay páginas que coincidan",
+        "lock": "Bloquear pantalla",
+        "profile": "Perfil"
+    },
+    "today": {
+        "title": "Hoy",
+        "todo": "Tareas",
+        "open": "{n} pendientes",
+        "addTask": "Añadir una tarea",
+        "newTask": "Nueva tarea",
+        "addTaskButton": "Añadir tarea",
+        "removeTask": "Eliminar tarea",
+        "nothingToDo": "No hay nada pendiente.",
+        "clearCompleted": "Borrar completadas",
+        "schedule": "Agenda",
+        "events": "sin eventos | 1 evento | {n} eventos",
+        "now": "Ahora",
+        "signedInAs": "Sesión iniciada como {email}",
+        "signOut": "Cerrar sesión"
+    },
+    "common": {
+        "cancel": "Cancelar",
+        "save": "Guardar",
+        "saved": "Guardado"
+    },
+    "preferences": {
+        "description": "Ajustes regionales y de idioma.",
+        "language": "Idioma",
+        "timezone": "Zona horaria",
+        "timezoneDescription": "Se usa para las fechas y tu agenda diaria.",
+        "savedDetail": "Tus preferencias se han actualizado."
+    }
+}

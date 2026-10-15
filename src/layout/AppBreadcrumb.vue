@@ -1,8 +1,10 @@
 <script setup>
 import { ref, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { useRoute } from 'vue-router';
 
 const route = useRoute();
+const { t, te } = useI18n();
 const breadcrumbRoutes = ref([]);
 
 function setBreadcrumbRoutes() {
@@ -32,7 +34,7 @@ watch(
     <nav class="layout-breadcrumb">
         <ol>
             <template v-for="(breadcrumbRoute, i) in breadcrumbRoutes" :key="breadcrumbRoute">
-                <li>{{ breadcrumbRoute }}</li>
+                <li>{{ te(breadcrumbRoute) ? t(breadcrumbRoute) : breadcrumbRoute }}</li>
                 <li v-if="i !== breadcrumbRoutes.length - 1" class="layout-breadcrumb-chevron">/</li>
             </template>
         </ol>

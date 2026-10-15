@@ -1,0 +1,50 @@
+{
+    "nav": {
+        "menu": "Menü",
+        "dashboard": "Dashboard",
+        "settings": "Einstellungen",
+        "help": "Hilfe",
+        "admin": "Verwaltung",
+        "profile": "Profil",
+        "account": "Konto",
+        "preferences": "Präferenzen",
+        "notifications": "Benachrichtigungen",
+        "appearance": "Darstellung",
+        "terms": "Allgemeine Geschäftsbedingungen"
+    },
+    "topbar": {
+        "search": "Suchen",
+        "searchPages": "Seiten durchsuchen",
+        "noMatches": "Keine passenden Seiten",
+        "lock": "Bildschirm sperren",
+        "profile": "Profil"
+    },
+    "today": {
+        "title": "Heute",
+        "todo": "Aufgaben",
+        "open": "{n} offen",
+        "addTask": "Aufgabe hinzufügen",
+        "newTask": "Neue Aufgabe",
+        "addTaskButton": "Aufgabe hinzufügen",
+        "removeTask": "Aufgabe entfernen",
+        "nothingToDo": "Nichts zu tun.",
+        "clearCompleted": "Erledigte entfernen",
+        "schedule": "Termine",
+        "events": "keine Termine | 1 Termin | {n} Termine",
+        "now": "Jetzt",
+        "signedInAs": "Angemeldet als {email}",
+        "signOut": "Abmelden"
+    },
+    "common": {
+        "cancel": "Abbrechen",
+        "save": "Speichern",
+        "saved": "Gespeichert"
+    },
+    "preferences": {
+        "description": "Regions- und Spracheinstellungen.",
+        "language": "Sprache",
+        "timezone": "Zeitzone",
+        "timezoneDescription": "Wird für Datumsangaben und deinen Tagesplan verwendet.",
+        "savedDetail": "Deine Präferenzen wurden aktualisiert."
+    }
+}

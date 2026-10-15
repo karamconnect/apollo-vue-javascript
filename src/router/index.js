@@ -6,7 +6,7 @@ import { createRouter, createWebHistory } from 'vue-router';
 import { createAuthGuard } from './guard';
 
 // Route meta: `requiresAuth`, `guestOnly` and `roles` (e.g. `roles: ['admin']`) — see ./guard.js.
-// `search: { icon, keywords, title? }` lists the page in the topbar search — see @/search/pages.js.
+// `breadcrumb` and `search.title` hold i18n keys (src/i18n/locales). `search: { icon, keywords, title? }` lists the page in the topbar search — see @/search/pages.js.
 
 const router = createRouter({
     history: createWebHistory(),
@@ -22,7 +22,7 @@ const router = createRouter({
                     path: '',
                     name: 'dashboard',
                     meta: {
-                        breadcrumb: ['Dashboard'],
+                        breadcrumb: ['nav.dashboard'],
                         search: { icon: 'pi pi-home', keywords: ['home', 'overview', 'sales', 'revenue', 'stats', 'products'] }
                     },
                     component: () => import('@/views/Dashboard.vue')
@@ -40,7 +40,7 @@ const router = createRouter({
                             path: 'profile',
                             name: 'settings-profile',
                             meta: {
-                                breadcrumb: ['Settings', 'Profile'],
+                                breadcrumb: ['nav.settings', 'nav.profile'],
                                 search: { icon: 'pi pi-user', keywords: ['name', 'email', 'bio', 'photo', 'avatar', 'picture'] }
                             },
                             component: () => import('@/views/settings/ProfileSettings.vue')
@@ -49,7 +49,7 @@ const router = createRouter({
                             path: 'account',
                             name: 'settings-account',
                             meta: {
-                                breadcrumb: ['Settings', 'Account'],
+                                breadcrumb: ['nav.settings', 'nav.account'],
                                 search: { icon: 'pi pi-lock', keywords: ['password', 'change password', 'security', 'sessions', 'sign out', 'delete account'] }
                             },
                             component: () => import('@/views/settings/AccountSettings.vue')
@@ -58,7 +58,7 @@ const router = createRouter({
                             path: 'preferences',
                             name: 'settings-preferences',
                             meta: {
-                                breadcrumb: ['Settings', 'Preferences'],
+                                breadcrumb: ['nav.settings', 'nav.preferences'],
                                 search: { icon: 'pi pi-sliders-h', keywords: ['language', 'timezone', 'region', 'locale'] }
                             },
                             component: () => import('@/views/settings/PreferencesSettings.vue')
@@ -67,7 +67,7 @@ const router = createRouter({
                             path: 'notifications',
                             name: 'settings-notifications',
                             meta: {
-                                breadcrumb: ['Settings', 'Notifications'],
+                                breadcrumb: ['nav.settings', 'nav.notifications'],
                                 search: { icon: 'pi pi-bell', keywords: ['email', 'alerts', 'push', 'weekly digest'] }
                             },
                             component: () => import('@/views/settings/NotificationSettings.vue')
@@ -76,7 +76,7 @@ const router = createRouter({
                             path: 'appearance',
                             name: 'settings-appearance',
                             meta: {
-                                breadcrumb: ['Settings', 'Appearance'],
+                                breadcrumb: ['nav.settings', 'nav.appearance'],
                                 search: { icon: 'pi pi-palette', keywords: ['theme', 'dark mode', 'light mode', 'colors', 'menu layout'] }
                             },
                             component: () => import('@/views/settings/AppearanceSettings.vue')
@@ -87,7 +87,7 @@ const router = createRouter({
                     path: '/help',
                     name: 'help',
                     meta: {
-                        breadcrumb: ['Help'],
+                        breadcrumb: ['nav.help'],
                         search: { icon: 'pi pi-question-circle', keywords: ['support', 'faq', 'contact', 'docs'] }
                     },
                     component: () => import('@/views/Help.vue')
@@ -96,7 +96,7 @@ const router = createRouter({
                     path: '/admin',
                     name: 'admin',
                     meta: {
-                        breadcrumb: ['Admin'],
+                        breadcrumb: ['nav.admin'],
                         search: { icon: 'pi pi-shield', keywords: ['users', 'roles', 'administration'] },
                         roles: ['admin']
                     },
@@ -158,7 +158,7 @@ const router = createRouter({
             path: '/terms',
             name: 'terms',
             meta: {
-                search: { title: 'Terms and Conditions', icon: 'pi pi-file', keywords: ['legal', 'terms of service', 'privacy'] }
+                search: { title: 'nav.terms', icon: 'pi pi-file', keywords: ['legal', 'terms of service', 'privacy'] }
             },
             component: () => import('@/views/legal/Terms.vue')
         },

@@ -1,0 +1,50 @@
+{
+    "nav": {
+        "menu": "Menu",
+        "dashboard": "Dashboard",
+        "settings": "Settings",
+        "help": "Help",
+        "admin": "Admin",
+        "profile": "Profile",
+        "account": "Account",
+        "preferences": "Preferences",
+        "notifications": "Notifications",
+        "appearance": "Appearance",
+        "terms": "Terms and Conditions"
+    },
+    "topbar": {
+        "search": "Search",
+        "searchPages": "Search pages",
+        "noMatches": "No matching pages",
+        "lock": "Lock screen",
+        "profile": "Profile"
+    },
+    "today": {
+        "title": "Today",
+        "todo": "To-Do",
+        "open": "{n} open",
+        "addTask": "Add a task",
+        "newTask": "New task",
+        "addTaskButton": "Add task",
+        "removeTask": "Remove task",
+        "nothingToDo": "Nothing to do.",
+        "clearCompleted": "Clear completed",
+        "schedule": "Schedule",
+        "events": "no events | 1 event | {n} events",
+        "now": "Now",
+        "signedInAs": "Signed in as {email}",
+        "signOut": "Sign out"
+    },
+    "common": {
+        "cancel": "Cancel",
+        "save": "Save",
+        "saved": "Saved"
+    },
+    "preferences": {
+        "description": "Regional and language settings.",
+        "language": "Language",
+        "timezone": "Timezone",
+        "timezoneDescription": "Used for dates and your daily schedule.",
+        "savedDetail": "Your preferences have been updated."
+    }
+}

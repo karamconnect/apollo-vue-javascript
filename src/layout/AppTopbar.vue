@@ -41,11 +41,11 @@ function goToPage({ value }) {
                             v-model="selected"
                             :suggestions="results"
                             optionLabel="title"
-                            placeholder="Search"
-                            ariaLabel="Search pages"
+                            :placeholder="$t('topbar.search')"
+                            :ariaLabel="$t('topbar.searchPages')"
                             :delay="100"
                             autoOptionFocus
-                            emptySearchMessage="No matching pages"
+                            :emptySearchMessage="$t('topbar.noMatches')"
                             inputClass="w-48 sm:w-full pl-10!"
                             @complete="query = $event.query"
                             @option-select="goToPage"
@@ -60,11 +60,11 @@ function goToPage({ value }) {
                     </IconField>
                 </li>
                 <li>
-                    <Button type="button" icon="pi pi-lock" text rounded severity="secondary" aria-label="Lock screen" title="Lock screen" @click="lock.lock" />
+                    <Button type="button" icon="pi pi-lock" text rounded severity="secondary" :aria-label="$t('topbar.lock')" :title="$t('topbar.lock')" @click="lock.lock" />
                 </li>
                 <li class="topbar-profile">
                     <Button type="button" class="topbar-sidebarbutton" @click="layout.toggleProfileSidebar">
-                        <img :src="avatar" alt="Profile" class="rounded-full object-cover" />
+                        <img :src="avatar" :alt="$t('topbar.profile')" class="rounded-full object-cover" />
                     </Button>
                 </li>
             </ul>

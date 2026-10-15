@@ -1,0 +1,50 @@
+{
+    "nav": {
+        "menu": "Menu",
+        "dashboard": "Tableau de bord",
+        "settings": "Paramètres",
+        "help": "Aide",
+        "admin": "Administration",
+        "profile": "Profil",
+        "account": "Compte",
+        "preferences": "Préférences",
+        "notifications": "Notifications",
+        "appearance": "Apparence",
+        "terms": "Conditions générales"
+    },
+    "topbar": {
+        "search": "Rechercher",
+        "searchPages": "Rechercher des pages",
+        "noMatches": "Aucune page correspondante",
+        "lock": "Verrouiller l'écran",
+        "profile": "Profil"
+    },
+    "today": {
+        "title": "Aujourd'hui",
+        "todo": "À faire",
+        "open": "{n} en cours",
+        "addTask": "Ajouter une tâche",
+        "newTask": "Nouvelle tâche",
+        "addTaskButton": "Ajouter la tâche",
+        "removeTask": "Supprimer la tâche",
+        "nothingToDo": "Rien à faire.",
+        "clearCompleted": "Effacer les tâches terminées",
+        "schedule": "Agenda",
+        "events": "aucun événement | 1 événement | {n} événements",
+        "now": "En cours",
+        "signedInAs": "Connecté en tant que {email}",
+        "signOut": "Se déconnecter"
+    },
+    "common": {
+        "cancel": "Annuler",
+        "save": "Enregistrer",
+        "saved": "Enregistré"
+    },
+    "preferences": {
+        "description": "Paramètres régionaux et de langue.",
+        "language": "Langue",
+        "timezone": "Fuseau horaire",
+        "timezoneDescription": "Utilisé pour les dates et votre agenda du jour.",
+        "savedDetail": "Vos préférences ont été mises à jour."
+    }
+}
