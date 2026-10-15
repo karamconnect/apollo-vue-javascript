@@ -1,8 +1,8 @@
 <script setup>
-import { useLayout } from '@/layout/composables/layout';
+import { useLayoutStore } from '@/stores/layout';
 import { ref, watch } from 'vue';
 
-const { layoutConfig, isDarkTheme } = useLayout();
+const layout = useLayoutStore();
 
 const pieOptions = ref({});
 const pieData = ref({});
@@ -44,7 +44,7 @@ function initChart() {
 }
 
 watch(
-    [() => layoutConfig.primary, () => layoutConfig.surface, isDarkTheme],
+    [() => layout.config.primary, () => layout.config.surface, () => layout.isDarkTheme],
     () => {
         initChart();
     },

@@ -12,3 +12,4 @@ dist
 .eslintcache
 **/.DS_Store
 components.d.ts
+original_template

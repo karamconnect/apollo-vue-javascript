@@ -1,12 +1,12 @@
 <script setup>
-import { useLayout } from '@/layout/composables/layout';
+import { useLayoutStore } from '@/stores/layout';
 import { nextTick, onBeforeUnmount, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import AppMenu from './AppMenu.vue';
 
 const BREAKPOINT = 992;
 const mediaQuery = window.matchMedia(`(min-width: ${BREAKPOINT}px)`);
-const { layoutState, isDesktop, isHorizontal, isSlim, isSlimPlus, hasOpenOverlay, hasOverlaySubmenu, hasOpenOverlaySubmenu } = useLayout();
+const layout = useLayoutStore();
 const route = useRoute();
 const menuContainerRef = ref(null);
 const sidebarRef = ref(null);
@@ -18,34 +18,40 @@ let outsideClickListener = null;
 watch(
     () => route.path,
     (newPath) => {
-        if (hasOverlaySubmenu.value && isDesktop()) layoutState.activePath = null;
-        else layoutState.activePath = newPath;
+        if (layout.hasOverlaySubmenu && layout.isDesktop()) layout.ui.activePath = null;
+        else layout.ui.activePath = newPath;
 
-        layoutState.overlayMenuActive = false;
-        layoutState.mobileMenuActive = false;
-        layoutState.menuHoverActive = false;
+        layout.ui.overlayMenuActive = false;
+        layout.ui.mobileMenuActive = false;
+        layout.ui.menuHoverActive = false;
     },
     { immediate: true }
 );
 
-watch(hasOpenOverlay, (newVal) => {
-    if (isDesktop()) {
-        if (newVal) bindOutsideClickListener();
-        else unbindOutsideClickListener();
+watch(
+    () => layout.hasOpenOverlay,
+    (newVal) => {
+        if (layout.isDesktop()) {
+            if (newVal) bindOutsideClickListener();
+            else unbindOutsideClickListener();
+        }
     }
-});
+);
 
-watch(hasOpenOverlaySubmenu, (newValue) => {
-    if (isDesktop()) {
-        if (newValue) nextTick(setupIntersectionObserver);
-        else unbindObserver();
+watch(
+    () => layout.hasOpenOverlaySubmenu,
+    (newValue) => {
+        if (layout.isDesktop()) {
+            if (newValue) nextTick(setupIntersectionObserver);
+            else unbindObserver();
+        }
     }
-});
+);
 
 const screenChangeListener = () => {
-    if (hasOverlaySubmenu.value) {
-        layoutState.activePath = isDesktop() ? null : route.path;
-        layoutState.menuHoverActive = false;
+    if (layout.hasOverlaySubmenu) {
+        layout.ui.activePath = layout.isDesktop() ? null : route.path;
+        layout.ui.menuHoverActive = false;
         unbindOutsideClickListener();
         unbindObserver();
     }
@@ -55,11 +61,11 @@ const bindOutsideClickListener = () => {
     if (!outsideClickListener) {
         outsideClickListener = (event) => {
             if (isOutsideClicked(event)) {
-                layoutState.overlayMenuActive = false;
+                layout.ui.overlayMenuActive = false;
 
-                if (hasOverlaySubmenu.value) {
-                    layoutState.activePath = null;
-                    layoutState.menuHoverActive = false;
+                if (layout.hasOverlaySubmenu) {
+                    layout.ui.activePath = null;
+                    layout.ui.menuHoverActive = false;
                 }
             }
         };
@@ -82,36 +88,36 @@ function isOutsideClicked(event) {
 }
 
 const onMouseEnter = () => {
-    if (!layoutState.anchored) {
+    if (!layout.ui.anchored) {
         if (timeout) {
             clearTimeout(timeout);
             timeout = null;
         }
-        layoutState.sidebarExpanded = true;
+        layout.ui.sidebarExpanded = true;
     }
 };
 
 const onMouseLeave = () => {
-    if (!layoutState.anchored && !timeout) {
-        timeout = setTimeout(() => (layoutState.sidebarExpanded = false), 300);
+    if (!layout.ui.anchored && !timeout) {
+        timeout = setTimeout(() => (layout.ui.sidebarExpanded = false), 300);
     }
 };
 
 const onAnchorToggle = () => {
-    layoutState.anchored = !layoutState.anchored;
+    layout.ui.anchored = !layout.ui.anchored;
 };
 
 const onMenuScroll = () => {
     if (menuContainerRef.value) {
-        if (isHorizontal.value) {
+        if (layout.isHorizontal) {
             menuContainerRef.value.style.setProperty('--menu-scroll-x', `-${menuContainerRef.value.scrollLeft}px`);
-        } else if (isSlim.value || isSlimPlus.value) {
+        } else if (layout.isSlim || layout.isSlimPlus) {
             menuContainerRef.value.style.setProperty('--menu-scroll-y', `-${menuContainerRef.value.scrollTop}px`);
         }
     }
 
-    if (hasOverlaySubmenu.value && isDesktop()) {
-        layoutState.activePath = null;
+    if (layout.hasOverlaySubmenu && layout.isDesktop()) {
+        layout.ui.activePath = null;
     }
 };
 
@@ -128,8 +134,8 @@ const setupIntersectionObserver = () => {
     observer = new IntersectionObserver(
         (entries) => {
             entries.forEach((entry) => {
-                if (isDesktop() && !entry.isIntersecting && hasOverlaySubmenu.value && layoutState.activePath) {
-                    layoutState.activePath = null;
+                if (layout.isDesktop() && !entry.isIntersecting && layout.hasOverlaySubmenu && layout.ui.activePath) {
+                    layout.ui.activePath = null;
                 }
             });
         },

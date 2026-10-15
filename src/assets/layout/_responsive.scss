@@ -52,7 +52,6 @@
 
     .layout-content-wrapper {
         margin-left: 0;
-        padding: 1rem;
     }
 
     .layout-sidebar {
@@ -93,17 +92,11 @@
     }
 }
 
-@media screen and (min-width: 1960px) {
-    .layout-content,
-    .landing-wrapper {
-        width: 1504px;
-        margin-left: auto !important;
-        margin-right: auto !important;
-    }
-
-    .layout-topbar {
-        width: 1504px;
-        margin-left: auto !important;
-        margin-right: auto !important;
-    }
+// Wide screens: content and topbar grow up to $content-max-width, then center.
+.layout-content,
+.landing-wrapper,
+.layout-topbar {
+    max-width: $content-max-width;
+    margin-left: auto !important;
+    margin-right: auto !important;
 }

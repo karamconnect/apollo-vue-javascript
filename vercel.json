@@ -6,5 +6,5 @@
         }
     ],
     "trailingSlash": false,
-    "buildCommand": "bash .vercel/submodule-workaround.sh && npm run build"
+    "buildCommand": "npm run build"
 }

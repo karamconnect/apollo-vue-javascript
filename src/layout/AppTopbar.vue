@@ -1,18 +1,18 @@
 <script setup>
-import { useLayout } from '@/layout/composables/layout';
+import { useAvatar } from '@/auth/useAvatar';
+import { useLayoutStore } from '@/stores/layout';
+import { useLockStore } from '@/stores/lock';
 import AppBreadcrumb from './AppBreadcrumb.vue';
 
-const { toggleMenu, layoutState } = useLayout();
-
-function showProfileSidebar() {
-    layoutState.profileSidebarVisible = !layoutState.profileSidebarVisible;
-}
+const layout = useLayoutStore();
+const lock = useLockStore();
+const avatar = useAvatar();
 </script>
 
 <template>
     <div class="layout-topbar">
         <div class="topbar-start">
-            <Button type="button" class="topbar-menubutton p-trigger" @click="toggleMenu">
+            <Button type="button" class="topbar-menubutton p-trigger" @click="layout.toggleMenu">
                 <i class="pi pi-bars"></i>
             </Button>
 
@@ -27,9 +27,12 @@ function showProfileSidebar() {
                         <InputText type="text" placeholder="Search" class="w-48 sm:w-full" />
                     </IconField>
                 </li>
+                <li>
+                    <Button type="button" icon="pi pi-lock" text rounded severity="secondary" aria-label="Lock screen" title="Lock screen" @click="lock.lock" />
+                </li>
                 <li class="topbar-profile">
-                    <Button type="button" class="topbar-sidebarbutton" @click="showProfileSidebar">
-                        <img src="/demo/images/avatar/avatar.png" alt="Profile" />
+                    <Button type="button" class="topbar-sidebarbutton" @click="layout.toggleProfileSidebar">
+                        <img :src="avatar" alt="Profile" class="rounded-full object-cover" />
                     </Button>
                 </li>
             </ul>

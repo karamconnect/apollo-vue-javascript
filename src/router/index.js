@@ -1,5 +1,11 @@
+import { authClient } from '@/auth/client';
 import AppLayout from '@/layout/AppLayout.vue';
+import { useLockStore } from '@/stores/lock';
+import ErrorPage from '@/views/auth/Error.vue';
 import { createRouter, createWebHistory } from 'vue-router';
+import { createAuthGuard } from './guard';
+
+// Route meta: `requiresAuth`, `guestOnly` and `roles` (e.g. `roles: ['admin']`) — see ./guard.js.
 
 const router = createRouter({
     history: createWebHistory(),
@@ -7,6 +13,9 @@ const router = createRouter({
         {
             path: '/',
             component: AppLayout,
+            meta: {
+                requiresAuth: true
+            },
             children: [
                 {
                     path: '',
@@ -74,18 +83,102 @@ const router = createRouter({
                         breadcrumb: ['Help']
                     },
                     component: () => import('@/views/Help.vue')
+                },
+                {
+                    path: '/admin',
+                    name: 'admin',
+                    meta: {
+                        breadcrumb: ['Admin'],
+                        roles: ['admin']
+                    },
+                    component: () => import('@/views/Admin.vue')
                 }
             ]
         },
         {
+            path: '/auth',
+            children: [
+                {
+                    path: '',
+                    redirect: '/auth/login'
+                },
+                {
+                    path: 'login',
+                    name: 'login',
+                    meta: { guestOnly: true },
+                    component: () => import('@/views/auth/Login.vue')
+                },
+                {
+                    path: 'register',
+                    name: 'register',
+                    meta: { guestOnly: true },
+                    component: () => import('@/views/auth/Register.vue')
+                },
+                {
+                    path: 'forgot-password',
+                    name: 'forgot-password',
+                    meta: { guestOnly: true },
+                    component: () => import('@/views/auth/ForgotPassword.vue')
+                },
+                {
+                    path: 'reset-password',
+                    name: 'reset-password',
+                    meta: { guestOnly: true },
+                    component: () => import('@/views/auth/ResetPassword.vue')
+                },
+                {
+                    path: 'verification',
+                    name: 'verification',
+                    meta: { requiresAuth: true },
+                    component: () => import('@/views/auth/Verification.vue')
+                },
+                {
+                    path: 'access',
+                    name: 'access-denied',
+                    meta: { requiresAuth: true },
+                    component: () => import('@/views/auth/Access.vue')
+                },
+                {
+                    path: 'error',
+                    name: 'error',
+                    component: ErrorPage
+                }
+            ]
+        },
+        {
+            path: '/terms',
+            name: 'terms',
+            component: () => import('@/views/legal/Terms.vue')
+        },
+        {
+            // Signed-out users are sent to login first, so unknown paths don't reveal anything.
             path: '/:pathMatch(.*)*',
             name: 'notfound',
-            component: () => import('@/views/NotFound.vue')
+            meta: { requiresAuth: true },
+            component: ErrorPage,
+            props: { notFound: true }
         }
     ],
     scrollBehavior() {
         return { left: 0, top: 0 };
     }
+});
+
+router.beforeEach(
+    createAuthGuard({
+        async getUser() {
+            const { data } = await authClient.getSession();
+
+            return data?.user ?? null;
+        },
+        isLocked: () => useLockStore().locked
+    })
+);
+
+// E.g. a lazy-loaded page that fails to download. The error page is bundled eagerly so it can't fail the same way.
+router.onError((error, to) => {
+    console.error(error);
+    if (to.name !== 'error') router.replace({ name: 'error', query: { error: 'NAVIGATION_FAILED' } });
 });
 
 export default router;
