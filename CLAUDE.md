@@ -12,7 +12,7 @@ Lockfile is `package-lock.json` → npm.
 
 - `npm run dev` — Vite dev server
 - `npm run build` / `npm run preview`
-- `npm run lint` — ESLint with `--fix` (vue3-essential + prettier + `@intlify/vue-i18n`), also linting the locale JSON files
+- `npm run lint` — ESLint with `--fix` (vue3-essential + prettier + `@intlify/vue-i18n`), also linting the locale JSON files. The scripts name their targets (`src`, `scripts` and the root config files) instead of `.`, so ESLint never walks `node_modules`, `dist` or `original_template`, whatever the environment; add new top-level code folders there
 - `npm run format` — Prettier write (js/vue only). Don't point `prettier --write` at `src/assets/` — vendored Apollo styles, not in `.prettierignore`.
 
 - `npm test` — Vitest (run once); `npm run test:watch` for watch mode
