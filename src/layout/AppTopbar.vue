@@ -46,7 +46,7 @@ function goToPage({ value }) {
                             :delay="100"
                             autoOptionFocus
                             :emptySearchMessage="$t('topbar.noMatches')"
-                            inputClass="w-48 sm:w-full pl-10!"
+                            inputClass="w-48 sm:w-full ps-10!"
                             @complete="query = $event.query"
                             @option-select="goToPage"
                         >

@@ -29,6 +29,14 @@ export function avatarUrl(handle, size = 256) {
     return `${CDN_URL}/resize=width:${size},height:${size},fit:crop,align:faces/output=format:webp/${handle}`;
 }
 
+// Languages the picker has its own translations for (filestack-js `lang`); others get English.
+const PICKER_LANGUAGES = ['ca', 'da', 'de', 'en', 'es', 'fr', 'he', 'it', 'ja', 'ko', 'nl', 'no', 'pl', 'pt', 'ru', 'sv', 'tr', 'vi', 'zh'];
+
+export function pickerLanguage(locale) {
+    const language = locale.split('-')[0];
+    return PICKER_LANGUAGES.includes(language) ? language : 'en';
+}
+
 /**
  * Opens the picker for one image, forced to a square crop. Calls `onUpload(file)` with the uploaded
  * file's metadata (`handle`, `url`, `mimetype`, …), or closes the picker and calls `onError()` if the upload fails.
@@ -38,7 +46,7 @@ export async function openAvatarPicker({ onUpload, onError }) {
 
     const picker = client.picker({
         accept: ['image/*'],
-        lang: i18n.global.locale.value, // the picker has its own translations, including en, es, fr and de
+        lang: pickerLanguage(i18n.global.locale.value),
         maxFiles: 1,
         maxSize: AVATAR_MAX_SIZE,
         fromSources: ['local_file_system', 'webcam', 'url'],

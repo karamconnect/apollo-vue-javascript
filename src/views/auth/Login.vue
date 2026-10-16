@@ -81,7 +81,7 @@ async function onSubmit({ valid, values }) {
                     <Checkbox name="rememberMe" inputId="rememberMe" binary />
                     <label for="rememberMe" class="text-surface-900 dark:text-surface-0 font-medium">{{ $t('auth.login.rememberMe') }}</label>
                 </div>
-                <router-link :to="{ name: 'forgot-password' }" class="text-surface-600 dark:text-surface-200 hover:text-primary ml-auto transition-colors duration-300">{{ $t('auth.login.forgotPassword') }}</router-link>
+                <router-link :to="{ name: 'forgot-password' }" class="text-surface-600 dark:text-surface-200 hover:text-primary ms-auto transition-colors duration-300">{{ $t('auth.login.forgotPassword') }}</router-link>
             </div>
 
             <Button type="submit" :label="$t('auth.logIn')" :loading fluid />

@@ -13,7 +13,7 @@ const knobValue = ref(90);
                     <span class="text-4xl font-bold text-surface-900 dark:text-surface-0">120</span>
                     <div class="text-green-500">
                         <span class="font-medium">+12%</span>
-                        <i class="pi pi-arrow-up text-xs ml-2"></i>
+                        <i class="pi pi-arrow-up text-xs ms-2"></i>
                     </div>
                 </div>
                 <div class="w-6/12">
@@ -36,7 +36,7 @@ const knobValue = ref(90);
                     <span class="text-4xl font-bold text-surface-900 dark:text-surface-0">{{ $n(4500, 'currencyWhole') }}</span>
                     <div class="text-green-500">
                         <span class="font-medium">+20%</span>
-                        <i class="pi pi-arrow-up text-xs ml-2"></i>
+                        <i class="pi pi-arrow-up text-xs ms-2"></i>
                     </div>
                 </div>
                 <div class="w-6/12">
@@ -58,7 +58,7 @@ const knobValue = ref(90);
                     <span class="text-4xl font-bold text-surface-900 dark:text-surface-0">360</span>
                     <div class="text-pink-500">
                         <span class="font-medium">+24%</span>
-                        <i class="pi pi-arrow-down text-xs ml-2"></i>
+                        <i class="pi pi-arrow-down text-xs ms-2"></i>
                     </div>
                 </div>
                 <div class="w-6/12">
@@ -80,11 +80,11 @@ const knobValue = ref(90);
                     <span class="text-4xl font-bold text-surface-900 dark:text-surface-0">164</span>
                     <div class="text-green-500">
                         <span class="font-medium">+30%</span>
-                        <i class="pi pi-arrow-up text-xs ml-2"></i>
+                        <i class="pi pi-arrow-up text-xs ms-2"></i>
                     </div>
                 </div>
-                <div class="w-6/12 text-right">
-                    <Knob v-model="knobValue" valueTemplate="90%" readonly :strokeWidth="2" :size="90" class="-mt-8 ml-8"></Knob>
+                <div class="w-6/12 text-end">
+                    <Knob v-model="knobValue" valueTemplate="90%" readonly :strokeWidth="2" :size="90" class="-mt-8 ms-8"></Knob>
                 </div>
             </div>
         </div>

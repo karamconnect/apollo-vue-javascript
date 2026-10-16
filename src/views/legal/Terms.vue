@@ -34,13 +34,13 @@ function goBack() {
 <template>
     <div class="min-h-screen bg-surface-50 dark:bg-surface-950 px-4 py-12">
         <main class="max-w-3xl mx-auto bg-surface-0 dark:bg-surface-900 border border-surface-200 dark:border-surface-700 rounded p-6 md:p-12">
-            <Button :label="$t('common.back')" icon="pi pi-arrow-left" text size="small" class="mb-6 -ml-3" @click="goBack" />
+            <Button :label="$t('common.back')" icon="pi pi-arrow-left" text size="small" class="mb-6 -ms-3" @click="goBack" />
 
             <h1 class="mt-0 mb-2 text-3xl font-bold text-surface-900 dark:text-surface-0">{{ $t('nav.terms') }}</h1>
             <p class="mt-0 mb-8 text-surface-500 dark:text-surface-400">{{ $t('terms.lastUpdated', { date: lastUpdated }) }}</p>
 
-            <ol class="m-0 pl-6 flex flex-col gap-6">
-                <li v-for="section in sections" :key="section.id" class="pl-2">
+            <ol class="m-0 ps-6 flex flex-col gap-6">
+                <li v-for="section in sections" :key="section.id" class="ps-2">
                     <h2 class="mt-0 mb-2 text-lg font-semibold text-surface-900 dark:text-surface-0">{{ section.title }}</h2>
                     <p class="m-0 leading-relaxed text-surface-700 dark:text-surface-200">{{ section.body }}</p>
                 </li>

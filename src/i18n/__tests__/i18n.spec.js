@@ -4,10 +4,10 @@ import { PASSWORD_ERRORS } from '@/views/settings/password-schema';
 import { EMAIL_ERROR, PHONE_ERROR } from '@/views/settings/profile-schema';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { DEFAULT_LOCALE, i18n, loadPublished, LOCALES, setLocale, syncPrimeVueLocale } from '..';
-import de from '../locales/de.json';
 import en from '../locales/en.json';
-import es from '../locales/es.json';
-import fr from '../locales/fr.json';
+
+const files = Object.fromEntries(Object.entries(import.meta.glob('../locales/*.json', { eager: true, import: 'default' })).map(([path, messages]) => [path.match(/([\w-]+)\.json$/)[1], messages]));
+const isVariant = (code) => code.includes('-');
 
 function keys(messages, prefix = '') {
     return Object.entries(messages).flatMap(([key, value]) => (typeof value === 'object' ? keys(value, `${prefix}${key}.`) : [`${prefix}${key}`]));
@@ -19,13 +19,34 @@ describe('i18n', () => {
     it('has every English key in every other language', () => {
         const english = keys(en).sort();
 
-        for (const [code, messages] of Object.entries({ es, fr, de })) {
+        for (const [code, messages] of Object.entries(files).filter(([code]) => !isVariant(code))) {
             expect(keys(messages).sort(), code).toEqual(english);
         }
     });
 
+    it('only overrides existing keys in regional variants', () => {
+        const english = new Set(keys(en));
+
+        for (const [code, messages] of Object.entries(files).filter(([code]) => isVariant(code))) {
+            expect(
+                keys(messages).filter((key) => !english.has(key)),
+                code
+            ).toEqual([]);
+        }
+    });
+
     it('offers a message file for every listed language', () => {
-        expect(LOCALES.map((locale) => locale.code)).toEqual(['en', 'es', 'fr', 'de']);
+        expect(LOCALES.map((locale) => locale.code).sort()).toEqual(Object.keys(files).sort());
+    });
+
+    it('falls back from a regional variant to its base language, and sets the text direction', async () => {
+        await setLocale('ar-DZ');
+
+        expect(i18n.global.t('nav.settings')).toBe('الإعدادات');
+        expect(document.documentElement.dir).toBe('rtl');
+
+        await setLocale('es');
+        expect(document.documentElement.dir).toBe('ltr');
     });
 
     it('loads a language on demand and sets <html lang>', async () => {
@@ -91,15 +112,9 @@ describe('i18n', () => {
 
         it('keeps the bundled messages when the file is missing or the CDN is unreachable', async () => {
             await setLocale('fr');
-            vi.stubGlobal(
-                'fetch',
-                vi.fn(async () => ({ ok: false }))
-            );
+            vi.stubGlobal('fetch', vi.fn(async () => ({ ok: false })));
             await loadPublished('fr', 'https://cdn.example/abc');
-            vi.stubGlobal(
-                'fetch',
-                vi.fn(async () => Promise.reject(new TypeError('Failed to fetch')))
-            );
+            vi.stubGlobal('fetch', vi.fn(async () => Promise.reject(new TypeError('Failed to fetch'))));
             await loadPublished('de', 'https://cdn.example/abc');
 
             expect(i18n.global.t('nav.settings')).toBe('Paramètres');

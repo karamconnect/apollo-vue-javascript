@@ -53,12 +53,12 @@
                 .layout-root-menuitem {
                     > .layout-menuitem-root-text {
                         > span {
-                            margin-right: auto;
+                            margin-inline-end: auto;
                         }
 
                         > .layout-menuitem-root-icon {
                             display: block;
-                            margin-right: 0.125rem;
+                            margin-inline-end: 0.125rem;
                         }
                     }
                 }
@@ -73,18 +73,18 @@
 
                         .layout-menuitem-text {
                             order: 1;
-                            margin-right: auto;
+                            margin-inline-end: auto;
                         }
 
                         .layout-submenu-toggler {
                             order: 2;
                             display: none;
-                            margin-right: 0.5rem;
+                            margin-inline-end: 0.5rem;
                         }
 
                         .layout-menuitem-icon {
                             order: 3;
-                            margin-right: 0;
+                            margin-inline-end: 0;
                             font-size: 1.25rem;
                             width: auto;
                         }

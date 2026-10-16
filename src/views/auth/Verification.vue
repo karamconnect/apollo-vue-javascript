@@ -77,7 +77,7 @@ async function resend() {
         <template v-else>
             <div class="flex items-center mb-6 -mt-4">
                 <i class="pi pi-envelope text-surface-600 dark:text-surface-200"></i>
-                <span class="text-surface-900 dark:text-surface-0 font-bold ml-2">{{ maskedEmail }}</span>
+                <span class="text-surface-900 dark:text-surface-0 font-bold ms-2">{{ maskedEmail }}</span>
             </div>
 
             <Message v-if="isMockAuth" severity="info" size="small" class="mb-6">{{ $t('auth.verify.demo', { length: CODE_LENGTH }) }}</Message>

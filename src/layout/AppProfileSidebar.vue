@@ -108,7 +108,7 @@ function signOut() {
                         </div>
                         <div class="flex-1 min-w-0">
                             <div class="font-medium truncate">{{ event.title }}</div>
-                            <div class="text-sm text-surface-500 dark:text-surface-400"><i class="pi pi-map-marker text-xs! mr-1"></i>{{ event.location }}</div>
+                            <div class="text-sm text-surface-500 dark:text-surface-400"><i class="pi pi-map-marker text-xs! me-1"></i>{{ event.location }}</div>
                         </div>
                         <Tag v-if="eventStatus(event) === 'now'" :value="t('today.now')" class="self-start" />
                     </li>

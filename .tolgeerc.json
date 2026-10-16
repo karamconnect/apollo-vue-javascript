@@ -4,11 +4,11 @@
     "push": {
         "filesTemplate": "./src/i18n/locales/{languageTag}.json",
         "forceMode": "KEEP",
-        "languages": ["en", "es", "fr", "de"]
+        "languages": ["en", "es", "fr", "de", "pt", "ar", "ar-DZ", "ar-SY", "bn", "hi", "zh"]
     },
     "pull": {
         "path": "./src/i18n/locales",
         "fileStructureTemplate": "{languageTag}.{extension}",
-        "languages": ["en", "es", "fr", "de"]
+        "languages": ["en", "es", "fr", "de", "pt", "ar", "ar-DZ", "ar-SY", "bn", "hi", "zh"]
     }
 }

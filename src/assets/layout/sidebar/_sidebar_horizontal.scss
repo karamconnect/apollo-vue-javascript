@@ -68,7 +68,7 @@
 
                     .layout-submenu-toggler {
                         display: block;
-                        margin-left: auto;
+                        margin-inline-start: auto;
                         transition: transform 0.2s;
                     }
 
@@ -81,7 +81,7 @@
                         font-size: 0.875rem;
                         display: block;
                         margin-left: 0.75rem;
-                        margin-right: 0.75rem;
+                        margin-inline-end: 0.75rem;
                         white-space: nowrap;
                     }
 

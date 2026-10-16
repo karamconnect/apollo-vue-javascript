@@ -9,25 +9,30 @@ import { toMessages } from './messages';
 export const DEFAULT_LOCALE = 'en';
 
 // Each language is shown in its own name, so users can find theirs whatever the current language.
+// `prime` is the primelocale file with PrimeVue's own texts (date picker, paginator, aria labels, ...); PrimeVue ships
+// English. Regional variants (ar-DZ, ar-SY) only hold the messages that differ and fall back to their base language;
+// their region still matters for Intl dates and numbers.
 export const LOCALES = [
     { code: 'en', name: 'English' },
-    { code: 'es', name: 'Español' },
-    { code: 'fr', name: 'Français' },
-    { code: 'de', name: 'Deutsch' }
+    { code: 'es', name: 'Español', prime: () => import('primelocale/es.json') },
+    { code: 'fr', name: 'Français', prime: () => import('primelocale/fr.json') },
+    { code: 'de', name: 'Deutsch', prime: () => import('primelocale/de.json') },
+    { code: 'pt', name: 'Português', prime: () => import('primelocale/pt.json') },
+    { code: 'ar', name: 'العربية', prime: () => import('primelocale/ar.json') },
+    { code: 'ar-DZ', name: 'العربية (الجزائر)', prime: () => import('primelocale/ar.json') },
+    { code: 'ar-SY', name: 'العربية (سوريا)', prime: () => import('primelocale/ar.json') },
+    { code: 'bn', name: 'বাংলা', prime: () => import('primelocale/bn.json') },
+    { code: 'hi', name: 'हिन्दी', prime: () => import('primelocale/hi.json') },
+    { code: 'zh', name: '中文', prime: () => import('primelocale/zh-CN.json') }
 ];
 
-const loaders = {
-    es: () => import('./locales/es.json'),
-    fr: () => import('./locales/fr.json'),
-    de: () => import('./locales/de.json')
-};
+const RTL_LANGUAGES = ['ar'];
 
-// PrimeVue's own texts (date picker, paginator, aria labels, ...) come from primelocale. PrimeVue ships English.
-const primeLoaders = {
-    es: () => import('primelocale/es.json'),
-    fr: () => import('primelocale/fr.json'),
-    de: () => import('primelocale/de.json')
-};
+/** Base language of a regional code (`ar-DZ` -> `ar`), or undefined when there is none. */
+const baseOf = (code) => (code.includes('-') ? code.split('-')[0] : undefined);
+
+// Message files other than English, loaded when chosen (src/i18n/locales/<code>.json).
+const loaders = Object.fromEntries(Object.entries(import.meta.glob(['./locales/*.json', '!./locales/en.json'])).map(([path, load]) => [path.match(/([\w-]+)\.json$/)[1], load]));
 
 // Named formats for `$n(value, 'currency')`; Intl applies each language's conventions.
 const numberFormat = {
@@ -38,7 +43,8 @@ const numberFormat = {
 export const i18n = createI18n({
     legacy: false,
     locale: DEFAULT_LOCALE,
-    fallbackLocale: DEFAULT_LOCALE,
+    // Regional variants fall back to their base language, everything to English.
+    fallbackLocale: { ...Object.fromEntries(LOCALES.filter((l) => baseOf(l.code)).map((l) => [l.code, [baseOf(l.code), DEFAULT_LOCALE]])), default: [DEFAULT_LOCALE] },
     messages: { en },
     numberFormats: { en: numberFormat }
 });
@@ -74,23 +80,30 @@ export async function loadPublished(code, baseUrl = PUBLISHED_URL) {
     }
 }
 
-/** Switches the UI language, loading its messages first. Unknown codes fall back to English. */
-export async function setLocale(code) {
-    const locale = code in loaders || code === DEFAULT_LOCALE ? code : DEFAULT_LOCALE;
+async function loadLocale(code) {
+    if (i18n.global.availableLocales.includes(code)) return;
 
-    if (!i18n.global.availableLocales.includes(locale)) {
-        const [messages, prime] = await Promise.all([loaders[locale](), primeLoaders[locale]()]);
-        i18n.global.setLocaleMessage(locale, messages.default);
-        i18n.global.setNumberFormat(locale, numberFormat);
-        primeLocales[locale] = prime.default[locale];
-    }
+    const prime = LOCALES.find((l) => l.code === code).prime;
+    const [messages, primeFile] = await Promise.all([loaders[code](), prime()]);
+    i18n.global.setLocaleMessage(code, messages.default);
+    i18n.global.setNumberFormat(code, numberFormat);
+    primeLocales[code] = Object.values(primeFile.default)[0];
+}
+
+/** Switches the UI language, loading its messages first (and its base language's). Unknown codes fall back to English. */
+export async function setLocale(code) {
+    const locale = code in loaders ? code : DEFAULT_LOCALE;
+    const base = baseOf(locale);
+
+    if (locale !== DEFAULT_LOCALE) await Promise.all([loadLocale(locale), base && loadLocale(base)]);
 
     i18n.global.locale.value = locale;
     document.documentElement.lang = locale;
+    document.documentElement.dir = RTL_LANGUAGES.includes(base ?? locale) ? 'rtl' : 'ltr';
     applyPrimeVueLocale(locale);
 
-    // In the background, so a slow CDN never delays the switch.
-    loadPublished(locale);
+    // In the background, so a slow CDN never delays the switch. Variants also refresh their base language.
+    for (const code of [locale, base]) if (code) loadPublished(code);
 }
 
 /** Keeps PrimeVue's built-in texts in the current language. Call right after installing PrimeVue. */

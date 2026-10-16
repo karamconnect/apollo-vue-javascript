@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { avatarUrl, isDemoFilestackKey } from '../filestack';
+import { avatarUrl, isDemoFilestackKey, pickerLanguage } from '../filestack';
 
 describe('filestack service', () => {
     it('builds a square face-centred avatar URL, resizing before converting', () => {
@@ -9,5 +9,12 @@ describe('filestack service', () => {
 
     it('falls back to the demo key when VITE_FILESTACK_API_KEY is unset', () => {
         expect(isDemoFilestackKey).toBe(!import.meta.env.VITE_FILESTACK_API_KEY);
+    });
+
+    it('gives the picker a language it has, or English', () => {
+        expect(pickerLanguage('pt')).toBe('pt');
+        expect(pickerLanguage('zh')).toBe('zh');
+        expect(pickerLanguage('ar-DZ')).toBe('en');
+        expect(pickerLanguage('bn')).toBe('en');
     });
 });
