@@ -2,8 +2,8 @@ import { authErrorMessage } from '@/auth/errors';
 import { AUTH_ERRORS } from '@/auth/schemas';
 import { PASSWORD_ERRORS } from '@/views/settings/password-schema';
 import { EMAIL_ERROR, PHONE_ERROR } from '@/views/settings/profile-schema';
-import { afterEach, describe, expect, it } from 'vitest';
-import { DEFAULT_LOCALE, i18n, LOCALES, setLocale, syncPrimeVueLocale } from '..';
+import { afterEach, describe, expect, it, vi } from 'vitest';
+import { DEFAULT_LOCALE, i18n, loadPublished, LOCALES, setLocale, syncPrimeVueLocale } from '..';
 import de from '../locales/de.json';
 import en from '../locales/en.json';
 import es from '../locales/es.json';
@@ -69,5 +69,48 @@ describe('i18n', () => {
 
         await setLocale('en');
         expect(config.locale).toEqual({ accept: 'Yes', dayNames: ['Sunday'], aria: { close: 'Close', star: '1 star' } });
+    });
+
+    describe('published translations (Tolgee CDN)', () => {
+        afterEach(() => vi.unstubAllGlobals());
+
+        it('layers them over the bundled messages, once per language', async () => {
+            const fetch = vi.fn(async () => ({ ok: true, json: async () => ({ 'nav.help': 'Ayuda y soporte', 'nav.admin': '' }) }));
+            vi.stubGlobal('fetch', fetch);
+            await setLocale('es');
+
+            await loadPublished('es', 'https://cdn.example/abc/');
+            await loadPublished('es', 'https://cdn.example/abc/');
+
+            expect(fetch).toHaveBeenCalledOnce();
+            expect(fetch).toHaveBeenCalledWith('https://cdn.example/abc/es.json');
+            expect(i18n.global.t('nav.help')).toBe('Ayuda y soporte');
+            expect(i18n.global.t('nav.settings')).toBe('Ajustes'); // not published: bundled text stays
+            expect(i18n.global.t('nav.admin')).not.toBe(''); // empty translations are skipped
+        });
+
+        it('keeps the bundled messages when the file is missing or the CDN is unreachable', async () => {
+            await setLocale('fr');
+            vi.stubGlobal(
+                'fetch',
+                vi.fn(async () => ({ ok: false }))
+            );
+            await loadPublished('fr', 'https://cdn.example/abc');
+            vi.stubGlobal(
+                'fetch',
+                vi.fn(async () => Promise.reject(new TypeError('Failed to fetch')))
+            );
+            await loadPublished('de', 'https://cdn.example/abc');
+
+            expect(i18n.global.t('nav.settings')).toBe('Paramètres');
+        });
+
+        it('does nothing without a CDN URL (always the case in development and tests)', async () => {
+            const fetch = vi.fn();
+            vi.stubGlobal('fetch', fetch);
+            await loadPublished('pt');
+
+            expect(fetch).not.toHaveBeenCalled();
+        });
     });
 });

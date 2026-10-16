@@ -1,0 +1,14 @@
+{
+    "$schema": "https://docs.tolgee.io/cli-schema.json",
+    "format": "JSON_ICU",
+    "push": {
+        "filesTemplate": "./src/i18n/locales/{languageTag}.json",
+        "forceMode": "KEEP",
+        "languages": ["en", "es", "fr", "de"]
+    },
+    "pull": {
+        "path": "./src/i18n/locales",
+        "fileStructureTemplate": "{languageTag}.{extension}",
+        "languages": ["en", "es", "fr", "de"]
+    }
+}

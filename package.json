@@ -10,7 +10,9 @@
         "test:watch": "vitest",
         "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.json --fix --ignore-path .gitignore",
         "lint:check": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.json --ignore-path .gitignore",
-        "format": "prettier --write \"**/*.{js,vue,d.ts}\""
+        "format": "prettier --write \"**/*.{js,vue,d.ts}\"",
+        "i18n:push": "node scripts/tolgee.mjs push",
+        "i18n:pull": "node scripts/tolgee.mjs pull && prettier --write src/i18n/locales"
     },
     "dependencies": {
         "@flagsmith/flagsmith": "^12.4.0",
@@ -40,6 +42,8 @@
         "@primevue/auto-import-resolver": "^4.3.1",
         "@rushstack/eslint-patch": "^1.8.0",
         "@tailwindcss/vite": "^4.1.17",
+        "@tolgee/cli": "^2.21.0",
+        "@tolgee/web": "^7.3.0",
         "@vitejs/plugin-vue": "^5.0.5",
         "@vue/eslint-config-prettier": "^9.0.0",
         "@vue/test-utils": "^2.5.1",
