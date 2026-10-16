@@ -21,23 +21,60 @@ const loaders = {
     de: () => import('./locales/de.json')
 };
 
+// PrimeVue's own texts (date picker, paginator, aria labels, ...) come from primelocale. PrimeVue ships English.
+const primeLoaders = {
+    es: () => import('primelocale/es.json'),
+    fr: () => import('primelocale/fr.json'),
+    de: () => import('primelocale/de.json')
+};
+
+// Named formats for `$n(value, 'currency')`; Intl applies each language's conventions.
+const numberFormat = {
+    currency: { style: 'currency', currency: 'USD' },
+    currencyWhole: { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }
+};
+
 export const i18n = createI18n({
     legacy: false,
     locale: DEFAULT_LOCALE,
     fallbackLocale: DEFAULT_LOCALE,
-    messages: { en }
+    messages: { en },
+    numberFormats: { en: numberFormat }
 });
+
+const primeLocales = {};
+let primeVueConfig = null;
+
+function applyPrimeVueLocale(locale) {
+    if (!primeVueConfig) return;
+
+    const english = primeLocales[DEFAULT_LOCALE];
+    const translated = primeLocales[locale] ?? {};
+    // Merged over English, so keys newer than the primelocale release still have a text.
+    primeVueConfig.locale = { ...english, ...translated, aria: { ...english.aria, ...translated.aria } };
+}
 
 /** Switches the UI language, loading its messages first. Unknown codes fall back to English. */
 export async function setLocale(code) {
     const locale = code in loaders || code === DEFAULT_LOCALE ? code : DEFAULT_LOCALE;
 
     if (!i18n.global.availableLocales.includes(locale)) {
-        i18n.global.setLocaleMessage(locale, (await loaders[locale]()).default);
+        const [messages, prime] = await Promise.all([loaders[locale](), primeLoaders[locale]()]);
+        i18n.global.setLocaleMessage(locale, messages.default);
+        i18n.global.setNumberFormat(locale, numberFormat);
+        primeLocales[locale] = prime.default[locale];
     }
 
     i18n.global.locale.value = locale;
     document.documentElement.lang = locale;
+    applyPrimeVueLocale(locale);
+}
+
+/** Keeps PrimeVue's built-in texts in the current language. Call right after installing PrimeVue. */
+export function syncPrimeVueLocale(app) {
+    primeVueConfig = app.config.globalProperties.$primevue.config;
+    primeLocales[DEFAULT_LOCALE] = { ...primeVueConfig.locale };
+    applyPrimeVueLocale(i18n.global.locale.value);
 }
 
 /** Installs vue-i18n and keeps it on the language saved in Settings > Preferences. Call after Pinia. */

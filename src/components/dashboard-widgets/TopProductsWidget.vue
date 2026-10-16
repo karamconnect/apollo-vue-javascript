@@ -11,7 +11,7 @@ onMounted(() => {
 
 <template>
     <div class="card h-full">
-        <div class="text-surface-900 dark:text-surface-0 text-xl font-semibold mb-4">Top Products</div>
+        <div class="text-surface-900 dark:text-surface-0 text-xl font-semibold mb-4">{{ $t('dashboard.topProducts') }}</div>
         <ul class="list-none p-0 m-0">
             <template v-for="(product, i) in products" :key="{ i }">
                 <li v-if="i < 6" class="flex items-center justify-between p-4">
@@ -22,7 +22,7 @@ onMounted(() => {
                             <Rating v-model="product.rating" readonly :cancel="false"></Rating>
                         </div>
                     </div>
-                    <span class="ml-auto font-semibold text-xl p-text-secondary">${{ product.price }}</span>
+                    <span class="ml-auto font-semibold text-xl p-text-secondary">{{ $n(product.price, 'currency') }}</span>
                 </li>
             </template>
         </ul>

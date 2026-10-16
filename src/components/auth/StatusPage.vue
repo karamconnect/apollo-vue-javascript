@@ -23,7 +23,7 @@ defineProps({
             <p class="leading-normal mt-0 mb-8 text-surface-700 dark:text-surface-100 text-xl font-medium">{{ message }}</p>
             <slot>
                 <Button asChild v-slot="slotProps" :severity raised>
-                    <RouterLink to="/" :class="[slotProps.class, 'font-medium']">Go to Dashboard</RouterLink>
+                    <RouterLink to="/" :class="[slotProps.class, 'font-medium']">{{ $t('status.goToDashboard') }}</RouterLink>
                 </Button>
             </slot>
         </div>

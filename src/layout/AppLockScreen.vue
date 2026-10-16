@@ -5,6 +5,7 @@ import { useSignOut } from '@/auth/useSignOut';
 import AuthLayout from '@/components/auth/AuthLayout.vue';
 import { useLockStore } from '@/stores/lock';
 import { onMounted, ref, useTemplateRef } from 'vue';
+import { useI18n } from 'vue-i18n';
 
 // Covers the app (Apollo's lock screen) without navigating away, so the page underneath keeps
 // its state — e.g. a half-filled form. Unlocking re-checks the password by signing in again,
@@ -15,6 +16,7 @@ const props = defineProps({
 
 const lock = useLockStore();
 const signOut = useSignOut();
+const { t } = useI18n();
 
 const password = ref('');
 const loading = ref(false);
@@ -35,7 +37,7 @@ async function unlock() {
     password.value = '';
 
     if (result.error) {
-        error.value = result.error.status === 401 ? 'Incorrect password.' : result.error.message || 'Could not unlock. Please try again.';
+        error.value = result.error.status === 401 ? t('auth.lock.incorrectPassword') : t('auth.lock.failed');
         return;
     }
 
@@ -44,8 +46,8 @@ async function unlock() {
 </script>
 
 <template>
-    <div class="fixed inset-0 z-[5000] overflow-auto" role="dialog" aria-modal="true" aria-label="Screen locked">
-        <AuthLayout title="Screen locked" subtitle="Enter your password to continue where you left off.">
+    <div class="fixed inset-0 z-[5000] overflow-auto" role="dialog" aria-modal="true" :aria-label="$t('auth.lock.title')">
+        <AuthLayout :title="$t('auth.lock.title')" :subtitle="$t('auth.lock.subtitle')">
             <div class="flex flex-col items-center mb-6">
                 <img :src="user?.image || DEFAULT_AVATAR" class="w-12 h-12 mb-2 rounded-full object-cover" alt="" />
                 <span class="font-medium text-surface-900 dark:text-surface-0">{{ user?.name }}</span>
@@ -58,8 +60,8 @@ async function unlock() {
                         <InputIcon class="pi pi-lock z-10" />
                         <Password
                             v-model="password"
-                            placeholder="Password"
-                            ariaLabel="Password"
+                            :placeholder="$t('auth.password')"
+                            :ariaLabel="$t('auth.password')"
                             autocomplete="current-password"
                             :feedback="false"
                             toggleMask
@@ -72,11 +74,11 @@ async function unlock() {
                     <Message v-if="error" id="unlock-error" severity="error" size="small" variant="simple">{{ error }}</Message>
                 </div>
 
-                <Button type="submit" icon="pi pi-lock-open" label="Unlock" :loading :disabled="!password" fluid />
+                <Button type="submit" icon="pi pi-lock-open" :label="$t('auth.lock.unlock')" :loading :disabled="!password" fluid />
 
                 <span class="font-medium text-surface-600 dark:text-surface-200">
-                    Not you?
-                    <a href="#" class="font-semibold text-surface-900 dark:text-surface-0 hover:text-primary transition-colors duration-300" @click.prevent="signOut">Sign out</a>
+                    {{ $t('auth.lock.notYou') }}
+                    <a href="#" class="font-semibold text-surface-900 dark:text-surface-0 hover:text-primary transition-colors duration-300" @click.prevent="signOut">{{ $t('common.signOut') }}</a>
                 </span>
             </form>
         </AuthLayout>

@@ -1,11 +1,12 @@
 import { MIN_PASSWORD_LENGTH, PASSWORD_ERRORS } from '@/views/settings/password-schema';
 import { z } from 'zod';
 
+// Messages are vue-i18n keys, translated where they are shown (components/forms/FieldError.vue).
 export const AUTH_ERRORS = {
-    email: 'Enter a valid email address.',
-    passwordRequired: 'Enter your password.',
-    nameRequired: 'Enter your name.',
-    terms: 'Accept the terms to continue.'
+    email: 'validation.email',
+    passwordRequired: 'validation.passwordRequired',
+    nameRequired: 'validation.nameRequired',
+    terms: 'validation.terms'
 };
 
 const email = z.string().trim().pipe(z.email(AUTH_ERRORS.email));

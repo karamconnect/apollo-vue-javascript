@@ -4,7 +4,7 @@ import App from './App.vue';
 import router from './router';
 
 import { installFlags } from '@/flags';
-import { installI18n } from '@/i18n';
+import { installI18n, syncPrimeVueLocale } from '@/i18n';
 import { loadPreset } from '@/layout/theme';
 import { useLayoutStore } from '@/stores/layout';
 import PrimeVue from 'primevue/config';
@@ -34,6 +34,7 @@ Promise.all([loadPreset(layout.config.preset), localeReady])
                 }
             }
         });
+        syncPrimeVueLocale(app);
         app.use(ToastService);
         app.use(ConfirmationService);
 

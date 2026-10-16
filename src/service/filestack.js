@@ -1,3 +1,5 @@
+import { i18n } from '@/i18n';
+
 // Filestack (https://www.filestack.com) uploads, loaded on demand so the picker isn't in the main bundle.
 // Demo key — set VITE_FILESTACK_API_KEY to use your own Filestack account. Files uploaded with the
 // shared demo key land in Filestack's demo account, so don't use it for real user data.
@@ -36,6 +38,7 @@ export async function openAvatarPicker({ onUpload, onError }) {
 
     const picker = client.picker({
         accept: ['image/*'],
+        lang: i18n.global.locale.value, // the picker has its own translations, including en, es, fr and de
         maxFiles: 1,
         maxSize: AVATAR_MAX_SIZE,
         fromSources: ['local_file_system', 'webcam', 'url'],

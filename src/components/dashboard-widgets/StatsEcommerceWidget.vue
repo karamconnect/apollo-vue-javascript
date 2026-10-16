@@ -7,7 +7,7 @@ const knobValue = ref(90);
 <template>
     <div class="col-span-12 md:col-span-6 xl:col-span-3">
         <div class="card h-full">
-            <span class="font-semibold text-lg">Sales</span>
+            <span class="font-semibold text-lg">{{ $t('dashboard.sales') }}</span>
             <div class="flex justify-between items-start mt-4">
                 <div class="w-6/12">
                     <span class="text-4xl font-bold text-surface-900 dark:text-surface-0">120</span>
@@ -30,10 +30,10 @@ const knobValue = ref(90);
     </div>
     <div class="col-span-12 md:col-span-6 xl:col-span-3">
         <div class="card h-full">
-            <span class="font-semibold text-lg">Revenue</span>
+            <span class="font-semibold text-lg">{{ $t('dashboard.revenue') }}</span>
             <div class="flex justify-between items-start mt-4">
                 <div class="w-6/12">
-                    <span class="text-4xl font-bold text-surface-900 dark:text-surface-0">$4500</span>
+                    <span class="text-4xl font-bold text-surface-900 dark:text-surface-0">{{ $n(4500, 'currencyWhole') }}</span>
                     <div class="text-green-500">
                         <span class="font-medium">+20%</span>
                         <i class="pi pi-arrow-up text-xs ml-2"></i>
@@ -52,7 +52,7 @@ const knobValue = ref(90);
     </div>
     <div class="col-span-12 md:col-span-6 xl:col-span-3">
         <div class="card h-full">
-            <span class="font-semibold text-lg">Visitors</span>
+            <span class="font-semibold text-lg">{{ $t('dashboard.visitors') }}</span>
             <div class="flex justify-between items-start mt-4">
                 <div class="w-6/12">
                     <span class="text-4xl font-bold text-surface-900 dark:text-surface-0">360</span>
@@ -74,7 +74,7 @@ const knobValue = ref(90);
     </div>
     <div class="col-span-12 md:col-span-6 xl:col-span-3">
         <div class="card h-full">
-            <span class="font-semibold text-lg">Stock</span>
+            <span class="font-semibold text-lg">{{ $t('dashboard.stock') }}</span>
             <div class="flex justify-between items-start mt-4">
                 <div class="w-6/12">
                     <span class="text-4xl font-bold text-surface-900 dark:text-surface-0">164</span>

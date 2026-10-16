@@ -1,5 +1,6 @@
 <script setup>
-import { ref, watch } from 'vue';
+import { computed, ref, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { VueTelInput } from 'vue-tel-input';
 import 'vue-tel-input/vue-tel-input.css';
 
@@ -14,6 +15,17 @@ const props = defineProps({
 });
 
 const emit = defineEmits(['update:modelValue', 'blur']);
+
+const { locale } = useI18n();
+
+// vue-tel-input's own list names countries in English (plus the native name); show them in the UI language instead.
+const BUILT_IN_COUNTRIES = VueTelInput.props.allCountries.default();
+
+const countries = computed(() => {
+    const names = new Intl.DisplayNames([locale.value], { type: 'region' });
+
+    return BUILT_IN_COUNTRIES.map((country) => ({ ...country, name: names.of(country.iso2) ?? country.name })).sort((a, b) => a.name.localeCompare(b.name, locale.value));
+});
 
 // Country preselected from the browser language (en-GB -> GB), US if it has none.
 function browserCountry() {
@@ -46,10 +58,11 @@ function onInput(_text, phone) {
     <VueTelInput
         v-model="display"
         mode="international"
+        :allCountries="countries"
         :defaultCountry="browserCountry()"
         :autoDefaultCountry="false"
         :inputOptions="{ id: inputId, name: 'phone', autocomplete: 'tel', 'aria-invalid': invalid || undefined, 'aria-describedby': ariaDescribedby }"
-        :dropdownOptions="{ showDialCodeInSelection: false, showFlags: true, showSearchBox: true, ariaLabel: 'Country' }"
+        :dropdownOptions="{ showDialCodeInSelection: false, showFlags: true, showSearchBox: true, ariaLabel: $t('phone.country'), searchBoxPlaceholder: $t('phone.searchCountry') }"
         :styleClasses="['phone-input', { 'phone-input-invalid': invalid }]"
         validCharactersOnly
         @on-input="onInput"

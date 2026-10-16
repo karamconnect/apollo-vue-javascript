@@ -1,16 +1,21 @@
 <script setup>
 import { authClient, isMockAuth } from '@/auth/client';
+import { authErrorMessage } from '@/auth/errors';
 import { loginSchema } from '@/auth/schemas';
 import AuthLayout from '@/components/auth/AuthLayout.vue';
+import FieldError from '@/components/forms/FieldError.vue';
 import { safeRedirect } from '@/router/guard';
 import { useLockStore } from '@/stores/lock';
 import { zodResolver } from '@primevue/forms/resolvers/zod';
 import { ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { useRoute, useRouter } from 'vue-router';
 
 const route = useRoute();
 const router = useRouter();
 const lock = useLockStore();
+
+const { t } = useI18n();
 
 const resolver = zodResolver(loginSchema);
 const initialValues = { email: '', password: '', rememberMe: true };
@@ -29,7 +34,7 @@ async function onSubmit({ valid, values }) {
     loading.value = false;
 
     if (error) {
-        serverError.value = error.message || 'Could not sign in. Please try again.';
+        serverError.value = authErrorMessage(error, t('auth.login.failed'));
         return;
     }
 
@@ -40,17 +45,17 @@ async function onSubmit({ valid, values }) {
 </script>
 
 <template>
-    <AuthLayout title="Log in" subtitle="Please enter your details">
-        <Message v-if="isMockAuth" severity="info" size="small" class="mb-6">Demo mode: no server is connected, so any email and password will work.</Message>
+    <AuthLayout :title="$t('auth.logIn')" :subtitle="$t('auth.login.subtitle')">
+        <Message v-if="isMockAuth" severity="info" size="small" class="mb-6">{{ $t('auth.login.demo') }}</Message>
         <Message v-if="serverError" severity="error" class="mb-6" role="alert">{{ serverError }}</Message>
 
         <Form v-slot="$form" :initialValues :resolver :validateOnValueUpdate="false" validateOnBlur novalidate class="flex flex-col gap-6" @submit="onSubmit">
             <div class="flex flex-col gap-1">
                 <IconField>
                     <InputIcon class="pi pi-envelope" />
-                    <InputText name="email" type="email" placeholder="Email" aria-label="Email" autocomplete="email" :aria-describedby="$form.email?.invalid ? 'email-error' : undefined" fluid />
+                    <InputText name="email" type="email" :placeholder="$t('auth.email')" :aria-label="$t('auth.email')" autocomplete="email" :aria-describedby="$form.email?.invalid ? 'email-error' : undefined" fluid />
                 </IconField>
-                <Message v-if="$form.email?.invalid" id="email-error" severity="error" size="small" variant="simple">{{ $form.email.error?.message }}</Message>
+                <FieldError id="email-error" :field="$form.email" />
             </div>
 
             <div class="flex flex-col gap-1">
@@ -58,8 +63,8 @@ async function onSubmit({ valid, values }) {
                     <InputIcon class="pi pi-lock z-10" />
                     <Password
                         name="password"
-                        placeholder="Password"
-                        ariaLabel="Password"
+                        :placeholder="$t('auth.password')"
+                        :ariaLabel="$t('auth.password')"
                         autocomplete="current-password"
                         :feedback="false"
                         toggleMask
@@ -68,22 +73,22 @@ async function onSubmit({ valid, values }) {
                         :inputStyle="{ paddingLeft: '2.5rem' }"
                     />
                 </IconField>
-                <Message v-if="$form.password?.invalid" id="password-error" severity="error" size="small" variant="simple">{{ $form.password.error?.message }}</Message>
+                <FieldError id="password-error" :field="$form.password" />
             </div>
 
             <div class="flex flex-wrap items-center gap-4">
                 <div class="flex items-center gap-2">
                     <Checkbox name="rememberMe" inputId="rememberMe" binary />
-                    <label for="rememberMe" class="text-surface-900 dark:text-surface-0 font-medium">Remember me</label>
+                    <label for="rememberMe" class="text-surface-900 dark:text-surface-0 font-medium">{{ $t('auth.login.rememberMe') }}</label>
                 </div>
-                <router-link :to="{ name: 'forgot-password' }" class="text-surface-600 dark:text-surface-200 hover:text-primary ml-auto transition-colors duration-300">Forgot password?</router-link>
+                <router-link :to="{ name: 'forgot-password' }" class="text-surface-600 dark:text-surface-200 hover:text-primary ml-auto transition-colors duration-300">{{ $t('auth.login.forgotPassword') }}</router-link>
             </div>
 
-            <Button type="submit" label="Log in" :loading fluid />
+            <Button type="submit" :label="$t('auth.logIn')" :loading fluid />
 
             <span class="font-medium text-surface-600 dark:text-surface-200">
-                Don't have an account?
-                <router-link :to="{ name: 'register', query: route.query }" class="font-semibold text-surface-900 dark:text-surface-0 hover:text-primary transition-colors duration-300">Sign up</router-link>
+                {{ $t('auth.login.noAccount') }}
+                <router-link :to="{ name: 'register', query: route.query }" class="font-semibold text-surface-900 dark:text-surface-0 hover:text-primary transition-colors duration-300">{{ $t('auth.signUp') }}</router-link>
             </span>
         </Form>
     </AuthLayout>

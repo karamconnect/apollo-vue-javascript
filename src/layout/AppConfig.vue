@@ -1,30 +1,33 @@
 <script setup>
 import { presetNames, primaryColors, surfaces } from '@/layout/theme';
 import { useLayoutStore } from '@/stores/layout';
+import { computed } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { useRoute } from 'vue-router';
 
 const layout = useLayoutStore();
 const route = useRoute();
+const { t } = useI18n();
 
 const presetOptions = presetNames;
-const themeOptions = [
-    { name: 'Light', value: false },
-    { name: 'Dark', value: true }
-];
-const menuModeOptions = [
-    { label: 'Static', value: 'static' },
-    { label: 'Overlay', value: 'overlay' },
-    { label: 'Slim', value: 'slim' },
-    { label: 'Slim+', value: 'slim-plus' },
-    { label: 'Reveal', value: 'reveal' },
-    { label: 'Drawer', value: 'drawer' },
-    { label: 'Horizontal', value: 'horizontal' }
-];
-const menuThemeOptions = [
-    { label: 'Color Scheme', value: 'colorScheme' },
-    { label: 'Primary Color', value: 'primaryColor' },
-    { label: 'Transparent', value: 'transparent' }
-];
+const themeOptions = computed(() => [
+    { name: t('settings.appearance.light'), value: false },
+    { name: t('settings.appearance.dark'), value: true }
+]);
+const menuModeOptions = computed(() => [
+    { label: t('settings.appearance.menuStatic'), value: 'static' },
+    { label: t('settings.appearance.menuOverlay'), value: 'overlay' },
+    { label: t('settings.appearance.menuSlim'), value: 'slim' },
+    { label: t('settings.appearance.menuSlimPlus'), value: 'slim-plus' },
+    { label: t('settings.appearance.menuReveal'), value: 'reveal' },
+    { label: t('settings.appearance.menuDrawer'), value: 'drawer' },
+    { label: t('settings.appearance.menuHorizontal'), value: 'horizontal' }
+]);
+const menuThemeOptions = computed(() => [
+    { label: t('settings.appearance.themeColorScheme'), value: 'colorScheme' },
+    { label: t('settings.appearance.themePrimaryColor'), value: 'primaryColor' },
+    { label: t('settings.appearance.themeTransparent'), value: 'transparent' }
+]);
 
 function isTransparentDisabled(option) {
     return option.value === 'transparent' && (layout.config.menuMode === 'reveal' || layout.config.menuMode === 'drawer');
@@ -34,7 +37,7 @@ function isTransparentDisabled(option) {
 <template>
     <div class="grid grid-cols-12 gap-6">
         <div class="col-span-12 md:col-span-6 flex flex-col gap-2">
-            <span class="font-medium">Primary</span>
+            <span class="font-medium">{{ $t('settings.appearance.primary') }}</span>
             <div class="flex gap-2 flex-wrap">
                 <button
                     v-for="primaryColor of primaryColors"
@@ -50,7 +53,7 @@ function isTransparentDisabled(option) {
         </div>
 
         <div class="col-span-12 md:col-span-6 flex flex-col gap-2">
-            <span class="font-medium">Surface</span>
+            <span class="font-medium">{{ $t('settings.appearance.surface') }}</span>
             <div class="flex gap-2 flex-wrap">
                 <button
                     v-for="surface of surfaces"
@@ -69,22 +72,22 @@ function isTransparentDisabled(option) {
         </div>
 
         <div class="col-span-12 md:col-span-6 flex flex-col gap-2">
-            <span class="font-medium">Preset</span>
+            <span class="font-medium">{{ $t('settings.appearance.preset') }}</span>
             <SelectButton :modelValue="layout.config.preset" :options="presetOptions" :allowEmpty="false" @update:modelValue="layout.setPreset" />
         </div>
 
         <div class="col-span-12 md:col-span-6 flex flex-col gap-2">
-            <span class="font-medium">Color scheme</span>
+            <span class="font-medium">{{ $t('settings.appearance.colorScheme') }}</span>
             <SelectButton :modelValue="layout.config.darkTheme" :options="themeOptions" optionLabel="name" optionValue="value" :allowEmpty="false" @update:modelValue="layout.setDarkTheme" />
         </div>
 
         <div class="col-span-12 md:col-span-6 flex flex-col gap-2">
-            <label for="menuMode" class="font-medium">Menu type</label>
+            <label for="menuMode" class="font-medium">{{ $t('settings.appearance.menuType') }}</label>
             <Select :modelValue="layout.config.menuMode" inputId="menuMode" :options="menuModeOptions" optionLabel="label" optionValue="value" fluid @update:modelValue="(mode) => layout.setMenuMode(mode, route.path)" />
         </div>
 
         <div class="col-span-12 md:col-span-6 flex flex-col gap-2">
-            <label for="menuTheme" class="font-medium">Menu theme</label>
+            <label for="menuTheme" class="font-medium">{{ $t('settings.appearance.menuTheme') }}</label>
             <Select :modelValue="layout.config.menuTheme" inputId="menuTheme" :options="menuThemeOptions" optionLabel="label" optionValue="value" :optionDisabled="isTransparentDisabled" fluid @update:modelValue="layout.setMenuTheme" />
         </div>
     </div>

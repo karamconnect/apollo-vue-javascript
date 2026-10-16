@@ -1,8 +1,9 @@
 import { isValidPhoneNumber } from 'libphonenumber-js';
 import { z } from 'zod';
 
-export const EMAIL_ERROR = 'Enter a valid email address.';
-export const PHONE_ERROR = 'Enter a valid phone number for the selected country.';
+// vue-i18n keys, translated where they are shown (components/forms/FieldError.vue).
+export const EMAIL_ERROR = 'validation.email';
+export const PHONE_ERROR = 'validation.phone';
 
 // Validates the Profile settings form. Every profile field is listed because the
 // PrimeVue resolver submits the parsed output, and z.object() drops unknown keys.

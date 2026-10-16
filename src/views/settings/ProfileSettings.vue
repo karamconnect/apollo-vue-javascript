@@ -1,6 +1,8 @@
 <script setup>
 import { authClient } from '@/auth/client';
+import { authErrorMessage } from '@/auth/errors';
 import { useAvatar } from '@/auth/useAvatar';
+import FieldError from '@/components/forms/FieldError.vue';
 import PhoneInput from '@/components/forms/PhoneInput.vue';
 import SettingsRow from '@/components/settings/SettingsRow.vue';
 import SettingsSection from '@/components/settings/SettingsSection.vue';
@@ -10,10 +12,12 @@ import { zodResolver } from '@primevue/forms/resolvers/zod';
 import { useFlags } from 'flagsmith-vue';
 import { useToast } from 'primevue/usetoast';
 import { computed, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { profileSchema } from './profile-schema';
 
 const toast = useToast();
 const user = useUserStore();
+const { t } = useI18n();
 const session = authClient.useSession();
 const avatar = useAvatar();
 const { profile_photo_upload: photoUploadFlag } = useFlags(['profile_photo_upload']);
@@ -31,13 +35,13 @@ function resetForm() {
 
 function onSubmit({ valid, values }) {
     if (!valid) {
-        toast.add({ severity: 'error', summary: 'Not saved', detail: 'Please fix the highlighted fields.', life: 3000 });
+        toast.add({ severity: 'error', summary: t('settings.profile.notSaved'), detail: t('settings.profile.fixFields'), life: 3000 });
         return;
     }
 
     user.updateProfile(values);
     resetForm();
-    toast.add({ severity: 'success', summary: 'Saved', detail: 'Your profile has been updated.', life: 3000 });
+    toast.add({ severity: 'success', summary: t('common.saved'), detail: t('settings.profile.savedDetail'), life: 3000 });
 }
 
 // The photo is saved straight to the auth user (`user.image`), not with the form's Save button.
@@ -49,19 +53,19 @@ async function savePhoto(image, detail) {
     const { error } = await authClient.updateUser({ image });
     photoBusy.value = false;
 
-    if (error) toast.add({ severity: 'error', summary: 'Photo not saved', detail: error.message || 'Please try again.', life: 4000 });
-    else toast.add({ severity: 'success', summary: 'Photo updated', detail, life: 3000 });
+    if (error) toast.add({ severity: 'error', summary: t('settings.profile.photoNotSaved'), detail: authErrorMessage(error), life: 4000 });
+    else toast.add({ severity: 'success', summary: t('settings.profile.photoUpdated'), detail, life: 3000 });
 }
 
 function photoError() {
     photoBusy.value = false;
-    toast.add({ severity: 'error', summary: 'Upload failed', detail: 'Could not upload the photo. Please try again later.', life: 6000 });
+    toast.add({ severity: 'error', summary: t('settings.profile.uploadFailed'), detail: t('settings.profile.uploadFailedDetail'), life: 6000 });
 }
 
 async function changePhoto() {
     photoBusy.value = true;
     try {
-        await openAvatarPicker({ onUpload: (file) => savePhoto(avatarUrl(file.handle), 'Your new photo is saved.'), onError: photoError });
+        await openAvatarPicker({ onUpload: (file) => savePhoto(avatarUrl(file.handle), t('settings.profile.photoSaved')), onError: photoError });
     } catch {
         photoError(); // the Filestack library failed to load
         return;
@@ -72,43 +76,47 @@ async function changePhoto() {
 
 <template>
     <Form :key="formKey" v-slot="$form" :initialValues :resolver :validateOnValueUpdate="false" validateOnBlur novalidate @submit="onSubmit">
-        <SettingsSection title="Profile" description="How you appear to others.">
-            <SettingsRow v-if="photoUploadFlag?.enabled" label="Photo" :description="isDemoFilestackKey ? 'Square, up to 10 MB. Saved right away. Demo mode: uploads go to Filestack\'s shared demo account.' : 'Square, up to 10 MB. Saved right away.'">
+        <SettingsSection :title="$t('nav.profile')" :description="$t('settings.profile.description')">
+            <SettingsRow
+                v-if="photoUploadFlag?.enabled"
+                :label="$t('settings.profile.photo')"
+                :description="isDemoFilestackKey ? `${$t('settings.profile.photoDescription')} ${$t('settings.profile.photoDemo')}` : $t('settings.profile.photoDescription')"
+            >
                 <div class="flex flex-wrap items-center gap-4">
                     <Avatar :image="avatar" size="xlarge" shape="circle" class="overflow-hidden" />
-                    <Button type="button" label="Change photo" icon="pi pi-upload" severity="secondary" outlined :loading="photoBusy" @click="changePhoto" />
-                    <Button v-if="hasPhoto" type="button" label="Remove" icon="pi pi-trash" severity="danger" text :disabled="photoBusy" @click="savePhoto(null, 'Your photo was removed.')" />
+                    <Button type="button" :label="$t('settings.profile.changePhoto')" icon="pi pi-upload" severity="secondary" outlined :loading="photoBusy" @click="changePhoto" />
+                    <Button v-if="hasPhoto" type="button" :label="$t('settings.profile.removePhoto')" icon="pi pi-trash" severity="danger" text :disabled="photoBusy" @click="savePhoto(null, $t('settings.profile.photoRemoved'))" />
                 </div>
             </SettingsRow>
 
-            <SettingsRow label="Name" for="firstName">
+            <SettingsRow :label="$t('settings.profile.name')" for="firstName">
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <InputText id="firstName" name="firstName" placeholder="First name" aria-label="First name" fluid />
-                    <InputText name="lastName" placeholder="Last name" aria-label="Last name" fluid />
+                    <InputText id="firstName" name="firstName" :placeholder="$t('settings.profile.firstName')" :aria-label="$t('settings.profile.firstName')" fluid />
+                    <InputText name="lastName" :placeholder="$t('settings.profile.lastName')" :aria-label="$t('settings.profile.lastName')" fluid />
                 </div>
             </SettingsRow>
 
-            <SettingsRow label="Email" description="Used for sign-in and notifications. Optional." for="email">
+            <SettingsRow :label="$t('settings.profile.email')" :description="$t('settings.profile.emailDescription')" for="email">
                 <div class="flex flex-col gap-1">
                     <InputText id="email" name="email" type="email" autocomplete="email" :aria-describedby="$form.email?.invalid ? 'email-error' : undefined" fluid />
-                    <Message v-if="$form.email?.invalid" id="email-error" severity="error" size="small" variant="simple">{{ $form.email.error?.message }}</Message>
+                    <FieldError id="email-error" :field="$form.email" />
                 </div>
             </SettingsRow>
 
-            <SettingsRow label="Phone" description="Optional. Pick the country, then type the number." for="phone">
+            <SettingsRow :label="$t('settings.profile.phone')" :description="$t('settings.profile.phoneDescription')" for="phone">
                 <FormField v-slot="$field" name="phone" class="flex flex-col gap-1">
                     <PhoneInput :modelValue="$field.value" inputId="phone" :invalid="$field.invalid" :ariaDescribedby="$field.invalid ? 'phone-error' : undefined" @update:modelValue="(value) => $field.onInput({ value })" @blur="$field.onBlur" />
-                    <Message v-if="$field.invalid" id="phone-error" severity="error" size="small" variant="simple">{{ $field.error?.message }}</Message>
+                    <FieldError id="phone-error" :field="$field" />
                 </FormField>
             </SettingsRow>
 
-            <SettingsRow label="Bio" description="A short introduction." for="bio">
+            <SettingsRow :label="$t('settings.profile.bio')" :description="$t('settings.profile.bioDescription')" for="bio">
                 <Textarea id="bio" name="bio" rows="4" autoResize fluid />
             </SettingsRow>
 
             <template #actions>
-                <Button type="button" label="Cancel" severity="secondary" outlined @click="resetForm" />
-                <Button type="submit" label="Save" icon="pi pi-check" />
+                <Button type="button" :label="$t('common.cancel')" severity="secondary" outlined @click="resetForm" />
+                <Button type="submit" :label="$t('common.save')" icon="pi pi-check" />
             </template>
         </SettingsSection>
     </Form>

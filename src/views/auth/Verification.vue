@@ -1,9 +1,11 @@
 <script setup>
 import { authClient, isMockAuth } from '@/auth/client';
+import { authErrorMessage } from '@/auth/errors';
 import AuthLayout from '@/components/auth/AuthLayout.vue';
 import { safeRedirect } from '@/router/guard';
 import { useCountdown } from '@vueuse/core';
 import { computed, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { useRoute, useRouter } from 'vue-router';
 
 // Email verification with a one-time code (Better Auth emailOTP plugin). Shown after sign-up;
@@ -14,6 +16,7 @@ const RESEND_COOLDOWN_SECONDS = 30;
 const route = useRoute();
 const router = useRouter();
 const session = authClient.useSession();
+const { t } = useI18n();
 
 const email = computed(() => session.value.data?.user.email ?? '');
 const verified = computed(() => Boolean(session.value.data?.user.emailVerified));
@@ -40,7 +43,7 @@ async function verify() {
     loading.value = false;
 
     if (result.error) {
-        error.value = result.error.code === 'INVALID_OTP' ? "That code isn't right. Check it and try again." : result.error.message || 'Could not verify your email.';
+        error.value = authErrorMessage(result.error, t('auth.verify.failed'));
         code.value = '';
         return;
     }
@@ -55,20 +58,20 @@ async function resend() {
     const result = await authClient.emailOtp.sendVerificationOtp({ email: email.value, type: 'email-verification' });
 
     if (result.error) {
-        error.value = result.error.message || 'Could not send a new code.';
+        error.value = authErrorMessage(result.error, t('auth.verify.resendFailed'));
         return;
     }
 
-    resendNotice.value = 'A new code is on its way.';
+    resendNotice.value = t('auth.verify.resent');
     startCooldown(RESEND_COOLDOWN_SECONDS);
 }
 </script>
 
 <template>
-    <AuthLayout title="Verification" :subtitle="verified ? '' : 'We have sent a code to your email:'">
+    <AuthLayout :title="$t('auth.verify.title')" :subtitle="verified ? '' : $t('auth.verify.subtitle')">
         <div v-if="verified" class="flex flex-col gap-6">
-            <Message severity="success" role="status">Your email address is verified.</Message>
-            <Button label="Continue" fluid @click="continueToApp" />
+            <Message severity="success" role="status">{{ $t('auth.verify.verified') }}</Message>
+            <Button :label="$t('common.continue')" fluid @click="continueToApp" />
         </div>
 
         <template v-else>
@@ -77,11 +80,11 @@ async function resend() {
                 <span class="text-surface-900 dark:text-surface-0 font-bold ml-2">{{ maskedEmail }}</span>
             </div>
 
-            <Message v-if="isMockAuth" severity="info" size="small" class="mb-6">Demo mode: no email is sent. Any {{ CODE_LENGTH }}-digit code works (one is printed to the browser console).</Message>
+            <Message v-if="isMockAuth" severity="info" size="small" class="mb-6">{{ $t('auth.verify.demo', { length: CODE_LENGTH }) }}</Message>
 
             <form class="flex flex-col gap-6" novalidate @submit.prevent="verify">
                 <div class="flex flex-col gap-2">
-                    <label id="code-label" class="font-medium text-surface-900 dark:text-surface-0">Verification code</label>
+                    <label id="code-label" class="font-medium text-surface-900 dark:text-surface-0">{{ $t('auth.verify.codeLabel') }}</label>
                     <div role="group" aria-labelledby="code-label" :aria-describedby="error ? 'code-error' : undefined">
                         <InputOtp v-model="code" :length="CODE_LENGTH" integerOnly :invalid="Boolean(error)" />
                     </div>
@@ -89,7 +92,7 @@ async function resend() {
                     <Message v-else-if="resendNotice" severity="success" size="small" variant="simple" role="status">{{ resendNotice }}</Message>
                 </div>
 
-                <Button type="submit" label="Verify" :loading :disabled="code.length !== CODE_LENGTH" fluid />
+                <Button type="submit" :label="$t('auth.verify.submit')" :loading :disabled="code.length !== CODE_LENGTH" fluid />
 
                 <div class="flex flex-wrap justify-between gap-2 font-medium text-surface-600 dark:text-surface-200">
                     <button
@@ -98,9 +101,9 @@ async function resend() {
                         :disabled="cooldown > 0"
                         @click="resend"
                     >
-                        {{ cooldown > 0 ? `Resend code (${cooldown}s)` : 'Resend code' }}
+                        {{ cooldown > 0 ? $t('auth.verify.resendIn', { seconds: cooldown }) : $t('auth.verify.resend') }}
                     </button>
-                    <button type="button" class="p-0 bg-transparent border-0 cursor-pointer font-medium text-surface-600 dark:text-surface-200 hover:text-primary" @click="continueToApp">Skip for now</button>
+                    <button type="button" class="p-0 bg-transparent border-0 cursor-pointer font-medium text-surface-600 dark:text-surface-200 hover:text-primary" @click="continueToApp">{{ $t('auth.verify.skip') }}</button>
                 </div>
             </form>
         </template>

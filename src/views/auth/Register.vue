@@ -1,16 +1,21 @@
 <script setup>
 import { authClient } from '@/auth/client';
+import { authErrorMessage } from '@/auth/errors';
 import { registerSchema } from '@/auth/schemas';
 import AuthLayout from '@/components/auth/AuthLayout.vue';
+import FieldError from '@/components/forms/FieldError.vue';
 import { useUserStore } from '@/stores/user';
 import { MIN_PASSWORD_LENGTH } from '@/views/settings/password-schema';
 import { zodResolver } from '@primevue/forms/resolvers/zod';
 import { ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { useRoute, useRouter } from 'vue-router';
 
 const route = useRoute();
 const router = useRouter();
 const user = useUserStore();
+
+const { t } = useI18n();
 
 const resolver = zodResolver(registerSchema);
 const initialValues = { name: '', email: '', password: '', confirmPassword: '', terms: false };
@@ -29,7 +34,7 @@ async function onSubmit({ valid, values }) {
     loading.value = false;
 
     if (error) {
-        serverError.value = error.message || 'Could not create your account. Please try again.';
+        serverError.value = authErrorMessage(error, t('auth.register.failed'));
         return;
     }
 
@@ -43,24 +48,24 @@ async function onSubmit({ valid, values }) {
 </script>
 
 <template>
-    <AuthLayout title="Register" subtitle="Let's get started">
+    <AuthLayout :title="$t('auth.register.title')" :subtitle="$t('auth.register.subtitle')">
         <Message v-if="serverError" severity="error" class="mb-6" role="alert">{{ serverError }}</Message>
 
         <Form v-slot="$form" :initialValues :resolver :validateOnValueUpdate="false" validateOnBlur novalidate class="flex flex-col gap-6" @submit="onSubmit">
             <div class="flex flex-col gap-1">
                 <IconField>
                     <InputIcon class="pi pi-user" />
-                    <InputText name="name" placeholder="Full name" aria-label="Full name" autocomplete="name" :aria-describedby="$form.name?.invalid ? 'name-error' : undefined" fluid />
+                    <InputText name="name" :placeholder="$t('auth.fullName')" :aria-label="$t('auth.fullName')" autocomplete="name" :aria-describedby="$form.name?.invalid ? 'name-error' : undefined" fluid />
                 </IconField>
-                <Message v-if="$form.name?.invalid" id="name-error" severity="error" size="small" variant="simple">{{ $form.name.error?.message }}</Message>
+                <FieldError id="name-error" :field="$form.name" />
             </div>
 
             <div class="flex flex-col gap-1">
                 <IconField>
                     <InputIcon class="pi pi-envelope" />
-                    <InputText name="email" type="email" placeholder="Email" aria-label="Email" autocomplete="email" :aria-describedby="$form.email?.invalid ? 'email-error' : undefined" fluid />
+                    <InputText name="email" type="email" :placeholder="$t('auth.email')" :aria-label="$t('auth.email')" autocomplete="email" :aria-describedby="$form.email?.invalid ? 'email-error' : undefined" fluid />
                 </IconField>
-                <Message v-if="$form.email?.invalid" id="email-error" severity="error" size="small" variant="simple">{{ $form.email.error?.message }}</Message>
+                <FieldError id="email-error" :field="$form.email" />
             </div>
 
             <div class="flex flex-col gap-1">
@@ -68,8 +73,8 @@ async function onSubmit({ valid, values }) {
                     <InputIcon class="pi pi-lock z-10" />
                     <Password
                         name="password"
-                        :placeholder="`Password (at least ${MIN_PASSWORD_LENGTH} characters)`"
-                        ariaLabel="Password"
+                        :placeholder="$t('auth.passwordWithMin', { min: MIN_PASSWORD_LENGTH })"
+                        :ariaLabel="$t('auth.password')"
                         autocomplete="new-password"
                         toggleMask
                         fluid
@@ -77,7 +82,7 @@ async function onSubmit({ valid, values }) {
                         :inputStyle="{ paddingLeft: '2.5rem' }"
                     />
                 </IconField>
-                <Message v-if="$form.password?.invalid" id="password-error" severity="error" size="small" variant="simple">{{ $form.password.error?.message }}</Message>
+                <FieldError id="password-error" :field="$form.password" />
             </div>
 
             <div class="flex flex-col gap-1">
@@ -85,8 +90,8 @@ async function onSubmit({ valid, values }) {
                     <InputIcon class="pi pi-lock z-10" />
                     <Password
                         name="confirmPassword"
-                        placeholder="Confirm password"
-                        ariaLabel="Confirm password"
+                        :placeholder="$t('auth.confirmPassword')"
+                        :ariaLabel="$t('auth.confirmPassword')"
                         autocomplete="new-password"
                         :feedback="false"
                         toggleMask
@@ -95,26 +100,29 @@ async function onSubmit({ valid, values }) {
                         :inputStyle="{ paddingLeft: '2.5rem' }"
                     />
                 </IconField>
-                <Message v-if="$form.confirmPassword?.invalid" id="confirm-password-error" severity="error" size="small" variant="simple">{{ $form.confirmPassword.error?.message }}</Message>
+                <FieldError id="confirm-password-error" :field="$form.confirmPassword" />
             </div>
 
             <div class="flex flex-col gap-1">
                 <div class="flex items-center gap-2">
                     <Checkbox name="terms" inputId="terms" binary :aria-describedby="$form.terms?.invalid ? 'terms-error' : undefined" />
                     <label for="terms" class="text-surface-900 dark:text-surface-0 font-medium">
-                        I have read and agree to the
-                        <!-- New tab, so the half-filled form isn't lost. -->
-                        <router-link :to="{ name: 'terms' }" target="_blank" class="text-primary hover:underline">Terms and Conditions</router-link>
+                        <i18n-t keypath="auth.register.acceptTerms" scope="global">
+                            <template #terms>
+                                <!-- New tab, so the half-filled form isn't lost. -->
+                                <router-link :to="{ name: 'terms' }" target="_blank" class="text-primary hover:underline">{{ $t('nav.terms') }}</router-link>
+                            </template>
+                        </i18n-t>
                     </label>
                 </div>
-                <Message v-if="$form.terms?.invalid" id="terms-error" severity="error" size="small" variant="simple">{{ $form.terms.error?.message }}</Message>
+                <FieldError id="terms-error" :field="$form.terms" />
             </div>
 
-            <Button type="submit" label="Sign up" :loading fluid />
+            <Button type="submit" :label="$t('auth.signUp')" :loading fluid />
 
             <span class="font-medium text-surface-600 dark:text-surface-200">
-                Already have an account?
-                <router-link :to="{ name: 'login', query: route.query }" class="font-semibold text-surface-900 dark:text-surface-0 hover:text-primary transition-colors duration-300">Log in</router-link>
+                {{ $t('auth.register.haveAccount') }}
+                <router-link :to="{ name: 'login', query: route.query }" class="font-semibold text-surface-900 dark:text-surface-0 hover:text-primary transition-colors duration-300">{{ $t('auth.logIn') }}</router-link>
             </span>
         </Form>
     </AuthLayout>
