@@ -95,4 +95,23 @@ describe('usePersistedRef', () => {
 
         expect(state.value.locked).toBe(true);
     });
+
+    // Regression: localStorage was read before useStorage's error handling, so blocked site data broke startup.
+    it('works in memory when reading localStorage itself throws', () => {
+        const original = Object.getOwnPropertyDescriptor(window, 'localStorage');
+        Object.defineProperty(window, 'localStorage', {
+            configurable: true,
+            get() {
+                throw new DOMException('Access is denied for this document.', 'SecurityError');
+            }
+        });
+
+        try {
+            const state = create('blocked', { a: 1 });
+            state.value.a = 2;
+            expect(state.value).toEqual({ a: 2 });
+        } finally {
+            Object.defineProperty(window, 'localStorage', original);
+        }
+    });
 });

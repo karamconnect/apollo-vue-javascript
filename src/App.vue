@@ -1,6 +1,6 @@
 <script setup>
 import { authClient } from '@/auth/client';
-import { identifyFlagsUser } from '@/flags';
+import { flagsIdentityChanged, identifyFlagsUser } from '@/flags';
 import AppLockScreen from '@/layout/AppLockScreen.vue';
 import { useLockStore } from '@/stores/lock';
 import { computed, watch } from 'vue';
@@ -15,7 +15,7 @@ const showLockScreen = computed(() => lock.locked && (session.value.isPending ||
 watch(
     () => session.value.data?.user,
     (user, previous) => {
-        if (user?.id !== previous?.id) identifyFlagsUser(user ?? null);
+        if (flagsIdentityChanged(user, previous)) identifyFlagsUser(user ?? null);
     }
 );
 </script>

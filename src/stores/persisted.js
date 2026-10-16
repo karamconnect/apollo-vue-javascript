@@ -32,7 +32,9 @@ const tolerantJson = {
  * Storage errors never throw: reads fall back to `defaults`, failed writes keep the state in memory only.
  */
 export function usePersistedRef(key, defaults) {
-    return useStorage(STORAGE_PREFIX + key, structuredClone(defaults), localStorage, {
+    // Storage is left undefined so useStorage looks up localStorage itself, inside its try/catch: merely reading
+    // `window.localStorage` throws a SecurityError when site data is blocked.
+    return useStorage(STORAGE_PREFIX + key, structuredClone(defaults), undefined, {
         writeDefaults: false,
         mergeDefaults: mergeStored,
         serializer: tolerantJson,

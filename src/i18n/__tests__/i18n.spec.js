@@ -57,6 +57,16 @@ describe('i18n', () => {
         expect(document.documentElement.lang).toBe('es');
     });
 
+    // Regression: a slow download for an earlier choice switched the UI back to it after a newer one applied.
+    it('lets the latest choice win when an earlier language is still loading', async () => {
+        const pending = setLocale('hi'); // not loaded yet, so it waits for its files
+        await setLocale('en');
+        await pending;
+
+        expect(i18n.global.locale.value).toBe('en');
+        expect(document.documentElement.lang).toBe('en');
+    });
+
     it('falls back to English for an unknown language', async () => {
         await setLocale('xx');
 

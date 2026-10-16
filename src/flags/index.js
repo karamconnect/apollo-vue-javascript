@@ -30,6 +30,11 @@ export function installFlags(app) {
     flags.value ??= { ...DEFAULT_FLAGS };
 }
 
+/** Whether Flagsmith must re-identify: another user, or the same user with a new role (sent as a trait). */
+export function flagsIdentityChanged(user, previous) {
+    return user?.id !== previous?.id || user?.role !== previous?.role;
+}
+
 /** Ties flags to the signed-in user (for per-user / per-role targeting in Flagsmith), or resets to anonymous. */
 export function identifyFlagsUser(user) {
     if (!isFlagsmithConnected) return;

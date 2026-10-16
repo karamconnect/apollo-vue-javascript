@@ -91,11 +91,17 @@ async function loadLocale(code) {
 }
 
 /** Switches the UI language, loading its messages first (and its base language's). Unknown codes fall back to English. */
+let latestRequest = 0;
+
 export async function setLocale(code) {
     const locale = code in loaders ? code : DEFAULT_LOCALE;
     const base = baseOf(locale);
+    const request = ++latestRequest;
 
     if (locale !== DEFAULT_LOCALE) await Promise.all([loadLocale(locale), base && loadLocale(base)]);
+
+    // A newer call was made while this language was loading; that call decides the language.
+    if (request !== latestRequest) return;
 
     i18n.global.locale.value = locale;
     document.documentElement.lang = locale;

@@ -26,6 +26,15 @@ function setViewportWidth(width) {
     Object.defineProperty(window, 'innerWidth', { configurable: true, writable: true, value: width });
 }
 
+// Each test's stores are stopped afterwards: a live store from an earlier test would otherwise react to this
+// test's localStorage writes (useStorage syncs every store instance) and apply its own theme.
+const pinias = [];
+function freshPinia() {
+    const pinia = createPinia();
+    pinias.push(pinia);
+    setActivePinia(pinia);
+}
+
 describe('layout store', () => {
     let layout;
 
@@ -35,12 +44,13 @@ describe('layout store', () => {
         document.documentElement.className = '';
         delete document.startViewTransition;
         setViewportWidth(1280);
-        setActivePinia(createPinia());
+        freshPinia();
         layout = useLayoutStore();
     });
 
     afterEach(() => {
         delete document.startViewTransition;
+        for (const pinia of pinias.splice(0)) pinia._e.stop();
     });
 
     it('has default appearance and closed UI', () => {
@@ -199,7 +209,7 @@ describe('layout store', () => {
 
     it('applyTheme restores a saved theme, including dark mode', async () => {
         localStorage.setItem('app.layout.config', JSON.stringify({ preset: 'Nora', primary: 'rose', surface: 'stone', darkTheme: true }));
-        setActivePinia(createPinia());
+        freshPinia();
 
         await useLayoutStore().applyTheme();
 
@@ -211,7 +221,7 @@ describe('layout store', () => {
 
     it('applyTheme falls back to Aura for an unknown saved preset', async () => {
         localStorage.setItem('app.layout.config', JSON.stringify({ preset: 'Removed' }));
-        setActivePinia(createPinia());
+        freshPinia();
 
         await useLayoutStore().applyTheme();
 
@@ -239,10 +249,40 @@ describe('layout store', () => {
         expect(saved.menuMode).toBe('slim');
         expect(saved).not.toHaveProperty('profileSidebarVisible');
 
-        setActivePinia(createPinia());
+        freshPinia();
         const reloaded = useLayoutStore();
 
         expect(reloaded.config.menuMode).toBe('slim');
         expect(reloaded.ui.profileSidebarVisible).toBe(false);
+    });
+
+    // Regression: another tab's change updated `config` but not the applied theme.
+    describe('changes from another tab', () => {
+        function changeInOtherTab(config) {
+            const newValue = JSON.stringify({ ...layout.config, ...config });
+            localStorage.setItem('app.layout.config', newValue);
+            window.dispatchEvent(new StorageEvent('storage', { key: 'app.layout.config', newValue, storageArea: localStorage }));
+        }
+
+        it('reapplies the theme once PrimeVue is set up', async () => {
+            await layout.applyTheme();
+            vi.clearAllMocks();
+
+            changeInOtherTab({ darkTheme: true, primary: 'blue' });
+            await vi.waitFor(() => expect(theme.chain.use).toHaveBeenCalled());
+
+            expect(layout.config.darkTheme).toBe(true);
+            expect(document.documentElement.classList.contains('app-dark')).toBe(true);
+            expect(theme.chain.preset).toHaveBeenCalledWith(getPresetExt('blue'));
+        });
+
+        it('leaves the theme alone before the first applyTheme()', async () => {
+            changeInOtherTab({ darkTheme: true });
+            await nextTick();
+            await nextTick();
+
+            expect(theme.chain.use).not.toHaveBeenCalled();
+            expect(document.documentElement.classList.contains('app-dark')).toBe(false);
+        });
     });
 });
