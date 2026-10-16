@@ -13,3 +13,5 @@ dist
 **/.DS_Store
 components.d.ts
 original_template
+# Test reports (e.g. vitest.json for RWX)
+tmp/
