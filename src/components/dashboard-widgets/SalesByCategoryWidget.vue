@@ -1,8 +1,10 @@
 <script setup>
 import { useLayoutStore } from '@/stores/layout';
 import { ref, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
 
 const layout = useLayoutStore();
+const { t, locale } = useI18n();
 
 const pieOptions = ref({});
 const pieData = ref({});
@@ -12,7 +14,7 @@ function initChart() {
     const textColor = documentStyle.getPropertyValue('--text-color');
 
     pieData.value = {
-        labels: ['Electronics', 'Fashion', 'Household'],
+        labels: [t('dashboard.electronics'), t('dashboard.fashion'), t('dashboard.household')],
         datasets: [
             {
                 data: [300, 50, 100],
@@ -44,7 +46,7 @@ function initChart() {
 }
 
 watch(
-    [() => layout.config.primary, () => layout.config.surface, () => layout.isDarkTheme],
+    [() => layout.config.primary, () => layout.config.surface, () => layout.isDarkTheme, locale],
     () => {
         initChart();
     },
@@ -54,7 +56,7 @@ watch(
 
 <template>
     <div class="card h-full">
-        <div class="text-surface-900 dark:text-surface-0 text-xl font-semibold mb-12">Sales by Category</div>
+        <div class="text-surface-900 dark:text-surface-0 text-xl font-semibold mb-12">{{ $t('dashboard.salesByCategory') }}</div>
         <Chart type="pie" :data="pieData" :height="300" :options="pieOptions"></Chart>
     </div>
 </template>

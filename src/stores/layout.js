@@ -1,7 +1,7 @@
 import { getPresetExt, loadPreset, surfaces } from '@/layout/theme';
 import { $t, updatePreset, updateSurfacePalette } from '@primeuix/themes';
 import { acceptHMRUpdate, defineStore } from 'pinia';
-import { computed, ref } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { usePersistedRef } from './persisted';
 
 const OVERLAY_SUBMENU_MODES = ['slim', 'slim-plus', 'drawer', 'horizontal'];
@@ -84,12 +84,22 @@ export const useLayoutStore = defineStore('layout', () => {
         config.value.menuTheme = menuTheme;
     }
 
+    // The theme settings currently applied to the page (null until the first applyTheme(), i.e. before PrimeVue is
+    // installed). `config` can change without the actions below when another tab writes it (useStorage), so a
+    // mismatch means the page is stale and the theme is applied again.
+    let applied = null;
+    const themeKey = () => JSON.stringify([config.value.preset, config.value.primary, config.value.surface, config.value.darkTheme]);
+    watch(themeKey, (key) => {
+        if (applied !== null && key !== applied) applyTheme();
+    });
+
     function setDarkTheme(darkTheme) {
         if (config.value.darkTheme === darkTheme) return;
 
         const apply = () => {
             config.value.darkTheme = darkTheme;
             document.documentElement.classList.toggle('app-dark', darkTheme);
+            if (applied !== null) applied = themeKey();
         };
 
         if (document.startViewTransition) document.startViewTransition(apply);
@@ -99,11 +109,13 @@ export const useLayoutStore = defineStore('layout', () => {
     function setPrimary(name) {
         config.value.primary = name;
         updatePreset(getPresetExt(name));
+        if (applied !== null) applied = themeKey();
     }
 
     function setSurface(name) {
         config.value.surface = name;
         updateSurfacePalette(surfaces.find((surface) => surface.name === name)?.palette);
+        if (applied !== null) applied = themeKey();
     }
 
     function setPreset(name) {
@@ -114,6 +126,7 @@ export const useLayoutStore = defineStore('layout', () => {
     // Applies the full persisted theme; call once after PrimeVue is installed and whenever the preset changes.
     // Async because the preset is loaded on demand (see layout/theme.js).
     async function applyTheme() {
+        applied = themeKey();
         document.documentElement.classList.toggle('app-dark', config.value.darkTheme);
 
         const name = config.value.preset;

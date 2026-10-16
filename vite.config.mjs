@@ -21,6 +21,8 @@ export default defineConfig({
         }
     },
     test: {
-        environment: 'jsdom'
+        environment: 'jsdom',
+        // Test locations in the JSON report, so RWX can show failures inline (.rwx/ci.yml)
+        includeTaskLocation: true
     }
 });

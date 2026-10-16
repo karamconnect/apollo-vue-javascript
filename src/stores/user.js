@@ -8,6 +8,7 @@ export const useUserStore = defineStore('user', () => {
         firstName: '',
         lastName: '',
         email: '',
+        phone: '', // E.164, e.g. +14155550123
         bio: ''
     });
 

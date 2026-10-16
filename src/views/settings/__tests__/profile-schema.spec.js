@@ -1,8 +1,8 @@
 import { zodResolver } from '@primevue/forms/resolvers/zod';
 import { describe, expect, it } from 'vitest';
-import { EMAIL_ERROR, profileSchema } from '../profile-schema';
+import { EMAIL_ERROR, PHONE_ERROR, profileSchema } from '../profile-schema';
 
-const validProfile = { firstName: 'Ada', lastName: 'Lovelace', email: 'ada@example.com', bio: 'Mathematician' };
+const validProfile = { firstName: 'Ada', lastName: 'Lovelace', email: 'ada@example.com', phone: '+14155550123', bio: 'Mathematician' };
 
 function emailErrors(email) {
     const result = profileSchema.safeParse({ ...validProfile, email });
@@ -13,6 +13,25 @@ function emailErrors(email) {
 describe('profileSchema', () => {
     it('accepts a complete, valid profile', () => {
         expect(profileSchema.safeParse(validProfile)).toEqual({ success: true, data: validProfile });
+    });
+
+    describe('phone', () => {
+        it('accepts valid E.164 numbers from any country', () => {
+            for (const phone of ['+14155550123', '+442079460958', '+4930901820']) {
+                expect(profileSchema.safeParse({ ...validProfile, phone }).success, phone).toBe(true);
+            }
+        });
+
+        it('rejects numbers that are invalid for their country', () => {
+            const result = profileSchema.safeParse({ ...validProfile, phone: '+1415555' });
+
+            expect(result.success).toBe(false);
+            expect(result.error.issues[0]).toMatchObject({ path: ['phone'], message: PHONE_ERROR });
+        });
+
+        it('is optional', () => {
+            expect(profileSchema.safeParse({ ...validProfile, phone: '' }).success).toBe(true);
+        });
     });
 
     describe('email', () => {
@@ -55,7 +74,7 @@ describe('profileSchema', () => {
     });
 
     it('allows every field to be empty', () => {
-        expect(profileSchema.safeParse({ firstName: '', lastName: '', email: '', bio: '' }).success).toBe(true);
+        expect(profileSchema.safeParse({ firstName: '', lastName: '', email: '', phone: '', bio: '' }).success).toBe(true);
     });
 });
 

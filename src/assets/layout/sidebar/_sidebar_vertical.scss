@@ -94,13 +94,13 @@
             transition: box-shadow var(--layout-section-transition-duration);
 
             .layout-menuitem-icon {
-                margin-right: 0.5rem;
+                margin-inline-end: 0.5rem;
                 color: var(--menuitem-icon-color);
             }
 
             .layout-submenu-toggler {
                 font-size: 75%;
-                margin-left: auto;
+                margin-inline-start: auto;
                 transition: transform var(--layout-section-transition-duration);
             }
 

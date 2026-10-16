@@ -1,16 +1,21 @@
 <script setup>
 import { authClient } from '@/auth/client';
+import { authErrorMessage } from '@/auth/errors';
 import { resetPasswordSchema } from '@/auth/schemas';
 import AuthLayout from '@/components/auth/AuthLayout.vue';
+import FieldError from '@/components/forms/FieldError.vue';
 import { MIN_PASSWORD_LENGTH } from '@/views/settings/password-schema';
 import { zodResolver } from '@primevue/forms/resolvers/zod';
 import { computed, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { useRoute } from 'vue-router';
 
 const route = useRoute();
 
 // Better Auth appends `?token=…` to the link it emails (or `?error=INVALID_TOKEN` when the link is bad).
 const token = computed(() => (typeof route.query.token === 'string' ? route.query.token : ''));
+
+const { t } = useI18n();
 
 const resolver = zodResolver(resetPasswordSchema);
 const initialValues = { password: '', confirmPassword: '' };
@@ -30,7 +35,7 @@ async function onSubmit({ valid, values }) {
     loading.value = false;
 
     if (error) {
-        serverError.value = error.message || 'Could not reset your password. Please try again.';
+        serverError.value = authErrorMessage(error, t('auth.reset.failed'));
         return;
     }
 
@@ -39,15 +44,19 @@ async function onSubmit({ valid, values }) {
 </script>
 
 <template>
-    <AuthLayout title="New password" :subtitle="token && !done ? 'Enter your new password' : ''">
+    <AuthLayout :title="$t('auth.reset.title')" :subtitle="token && !done ? $t('auth.reset.subtitle') : ''">
         <div v-if="done" class="flex flex-col gap-6">
-            <Message severity="success" role="status">Your password has been reset. You can now log in with it.</Message>
-            <Button asChild v-slot="slotProps" fluid><RouterLink :to="{ name: 'login' }" :class="slotProps.class">Log in</RouterLink></Button>
+            <Message severity="success" role="status">{{ $t('auth.reset.done') }}</Message>
+            <Button asChild v-slot="slotProps" fluid
+                ><RouterLink :to="{ name: 'login' }" :class="slotProps.class">{{ $t('auth.logIn') }}</RouterLink></Button
+            >
         </div>
 
         <div v-else-if="!token" class="flex flex-col gap-6">
-            <Message severity="error" role="alert">This reset link is invalid or has expired.</Message>
-            <Button asChild v-slot="slotProps" fluid><RouterLink :to="{ name: 'forgot-password' }" :class="slotProps.class">Request a new link</RouterLink></Button>
+            <Message severity="error" role="alert">{{ $t('auth.reset.invalidLink') }}</Message>
+            <Button asChild v-slot="slotProps" fluid
+                ><RouterLink :to="{ name: 'forgot-password' }" :class="slotProps.class">{{ $t('auth.reset.requestNewLink') }}</RouterLink></Button
+            >
         </div>
 
         <template v-else>
@@ -59,8 +68,8 @@ async function onSubmit({ valid, values }) {
                         <InputIcon class="pi pi-lock z-10" />
                         <Password
                             name="password"
-                            :placeholder="`New password (at least ${MIN_PASSWORD_LENGTH} characters)`"
-                            ariaLabel="New password"
+                            :placeholder="$t('auth.newPasswordWithMin', { min: MIN_PASSWORD_LENGTH })"
+                            :ariaLabel="$t('auth.newPassword')"
                             autocomplete="new-password"
                             toggleMask
                             fluid
@@ -68,7 +77,7 @@ async function onSubmit({ valid, values }) {
                             :inputStyle="{ paddingLeft: '2.5rem' }"
                         />
                     </IconField>
-                    <Message v-if="$form.password?.invalid" id="password-error" severity="error" size="small" variant="simple">{{ $form.password.error?.message }}</Message>
+                    <FieldError id="password-error" :field="$form.password" />
                 </div>
 
                 <div class="flex flex-col gap-1">
@@ -76,8 +85,8 @@ async function onSubmit({ valid, values }) {
                         <InputIcon class="pi pi-lock z-10" />
                         <Password
                             name="confirmPassword"
-                            placeholder="Confirm new password"
-                            ariaLabel="Confirm new password"
+                            :placeholder="$t('auth.confirmNewPassword')"
+                            :ariaLabel="$t('auth.confirmNewPassword')"
                             autocomplete="new-password"
                             :feedback="false"
                             toggleMask
@@ -86,10 +95,10 @@ async function onSubmit({ valid, values }) {
                             :inputStyle="{ paddingLeft: '2.5rem' }"
                         />
                     </IconField>
-                    <Message v-if="$form.confirmPassword?.invalid" id="confirm-password-error" severity="error" size="small" variant="simple">{{ $form.confirmPassword.error?.message }}</Message>
+                    <FieldError id="confirm-password-error" :field="$form.confirmPassword" />
                 </div>
 
-                <Button type="submit" label="Reset password" :loading fluid />
+                <Button type="submit" :label="$t('auth.reset.submit')" :loading fluid />
             </Form>
         </template>
     </AuthLayout>

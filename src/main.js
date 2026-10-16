@@ -3,6 +3,8 @@ import { createApp } from 'vue';
 import App from './App.vue';
 import router from './router';
 
+import { installFlags } from '@/flags';
+import { installI18n, syncPrimeVueLocale } from '@/i18n';
 import { loadPreset } from '@/layout/theme';
 import { useLayoutStore } from '@/stores/layout';
 import PrimeVue from 'primevue/config';
@@ -16,12 +18,14 @@ const app = createApp(App);
 
 app.use(createPinia());
 app.use(router);
+installFlags(app);
+const localeReady = installI18n(app); // saved UI language (Settings > Preferences)
 
 const layout = useLayoutStore();
 
-// Only the saved theme preset is downloaded at startup (see layout/theme.js), so mount once it has loaded.
-loadPreset(layout.config.preset)
-    .then((preset) => {
+// Only the saved theme preset and language are downloaded at startup, so mount once both have loaded.
+Promise.all([loadPreset(layout.config.preset), localeReady])
+    .then(([preset]) => {
         app.use(PrimeVue, {
             theme: {
                 preset,
@@ -30,6 +34,7 @@ loadPreset(layout.config.preset)
                 }
             }
         });
+        syncPrimeVueLocale(app);
         app.use(ToastService);
         app.use(ConfirmationService);
 

@@ -4,7 +4,7 @@ import AppConfig from '@/layout/AppConfig.vue';
 </script>
 
 <template>
-    <SettingsSection title="Appearance" description="Theme and layout. Changes apply immediately.">
+    <SettingsSection :title="$t('nav.appearance')" :description="$t('settings.appearance.description')">
         <AppConfig />
     </SettingsSection>
 </template>

@@ -1,9 +1,14 @@
 <script setup>
 import { authClient, isMockAuth } from '@/auth/client';
+import { authErrorMessage } from '@/auth/errors';
 import { forgotPasswordSchema } from '@/auth/schemas';
 import AuthLayout from '@/components/auth/AuthLayout.vue';
+import FieldError from '@/components/forms/FieldError.vue';
 import { zodResolver } from '@primevue/forms/resolvers/zod';
 import { ref } from 'vue';
+import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n();
 
 const resolver = zodResolver(forgotPasswordSchema);
 const initialValues = { email: '' };
@@ -26,7 +31,7 @@ async function onSubmit({ valid, values }) {
     loading.value = false;
 
     if (error) {
-        serverError.value = error.message || 'Could not send the reset link. Please try again.';
+        serverError.value = authErrorMessage(error, t('auth.forgot.failed'));
         return;
     }
 
@@ -35,14 +40,19 @@ async function onSubmit({ valid, values }) {
 </script>
 
 <template>
-    <AuthLayout title="Forgot password" :subtitle="sentTo ? '' : 'Enter your email to reset your password'">
+    <AuthLayout :title="$t('auth.forgot.title')" :subtitle="sentTo ? '' : $t('auth.forgot.subtitle')">
         <div v-if="sentTo" class="flex flex-col gap-6">
             <Message severity="success" role="status">
-                If an account exists for <strong>{{ sentTo }}</strong
-                >, you'll get an email with a link to reset your password.
+                <i18n-t keypath="auth.forgot.sent" scope="global">
+                    <template #email>
+                        <strong>{{ sentTo }}</strong>
+                    </template>
+                </i18n-t>
             </Message>
-            <Message v-if="isMockAuth" severity="info" size="small">Demo mode: no email is sent. The reset link is printed to the browser console.</Message>
-            <Button asChild v-slot="slotProps" fluid><RouterLink :to="{ name: 'login' }" :class="slotProps.class">Back to log in</RouterLink></Button>
+            <Message v-if="isMockAuth" severity="info" size="small">{{ $t('auth.forgot.demo') }}</Message>
+            <Button asChild v-slot="slotProps" fluid
+                ><RouterLink :to="{ name: 'login' }" :class="slotProps.class">{{ $t('auth.forgot.backToLogin') }}</RouterLink></Button
+            >
         </div>
 
         <template v-else>
@@ -52,14 +62,16 @@ async function onSubmit({ valid, values }) {
                 <div class="flex flex-col gap-1">
                     <IconField>
                         <InputIcon class="pi pi-envelope" />
-                        <InputText name="email" type="email" placeholder="Email" aria-label="Email" autocomplete="email" :aria-describedby="$form.email?.invalid ? 'email-error' : undefined" fluid />
+                        <InputText name="email" type="email" :placeholder="$t('auth.email')" :aria-label="$t('auth.email')" autocomplete="email" :aria-describedby="$form.email?.invalid ? 'email-error' : undefined" fluid />
                     </IconField>
-                    <Message v-if="$form.email?.invalid" id="email-error" severity="error" size="small" variant="simple">{{ $form.email.error?.message }}</Message>
+                    <FieldError id="email-error" :field="$form.email" />
                 </div>
 
                 <div class="flex flex-wrap gap-2">
-                    <Button asChild v-slot="slotProps" outlined><RouterLink :to="{ name: 'login' }" :class="[slotProps.class, 'flex-auto']">Cancel</RouterLink></Button>
-                    <Button type="submit" label="Send reset link" class="flex-auto" :loading />
+                    <Button asChild v-slot="slotProps" outlined
+                        ><RouterLink :to="{ name: 'login' }" :class="[slotProps.class, 'flex-auto']">{{ $t('common.cancel') }}</RouterLink></Button
+                    >
+                    <Button type="submit" :label="$t('auth.forgot.submit')" class="flex-auto" :loading />
                 </div>
             </Form>
         </template>

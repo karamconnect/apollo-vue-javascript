@@ -1,6 +1,8 @@
 <script setup>
 import { authClient } from '@/auth/client';
+import { authErrorMessage } from '@/auth/errors';
 import { useSignOut } from '@/auth/useSignOut';
+import FieldError from '@/components/forms/FieldError.vue';
 import SettingsRow from '@/components/settings/SettingsRow.vue';
 import SettingsSection from '@/components/settings/SettingsSection.vue';
 import { useUserStore } from '@/stores/user';
@@ -8,6 +10,7 @@ import { zodResolver } from '@primevue/forms/resolvers/zod';
 import { useConfirm } from 'primevue/useconfirm';
 import { useToast } from 'primevue/usetoast';
 import { computed, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
 import { changePasswordSchema, MIN_PASSWORD_LENGTH } from './password-schema';
 
@@ -16,6 +19,7 @@ const toast = useToast();
 const confirm = useConfirm();
 const router = useRouter();
 const user = useUserStore();
+const { t } = useI18n();
 
 const passwordResolver = zodResolver(changePasswordSchema);
 const emptyPasswords = { currentPassword: '', newPassword: '', confirmPassword: '' };
@@ -38,11 +42,11 @@ async function onPasswordSubmit({ valid, values }) {
     updatingPassword.value = false;
 
     if (error) {
-        toastError(error, 'Password not changed');
+        toastError(error, t('settings.account.passwordNotChanged'));
         return;
     }
 
-    toast.add({ severity: 'success', summary: 'Password updated', detail: 'Other devices have been signed out.', life: 3000 });
+    toast.add({ severity: 'success', summary: t('settings.account.passwordUpdated'), detail: t('settings.account.otherDevicesSignedOut'), life: 3000 });
     passwordFormKey.value++;
 }
 
@@ -53,14 +57,14 @@ const deleteConfirmation = ref('');
 const canDelete = computed(() => deleteConfirmation.value === DELETE_PHRASE);
 
 function toastError(error, summary) {
-    toast.add({ severity: 'error', summary, detail: error.message || 'Something went wrong. Please try again.', life: 5000 });
+    toast.add({ severity: 'error', summary, detail: authErrorMessage(error), life: 5000 });
 }
 
 async function deleteAccount() {
     const { error } = await authClient.deleteUser();
 
     if (error) {
-        toastError(error, 'Account not deleted');
+        toastError(error, t('settings.account.notDeleted'));
         return;
     }
 
@@ -74,8 +78,8 @@ function confirmDeleteAccount(event) {
     confirm.require({
         group: 'delete-account',
         target: event.currentTarget,
-        header: 'Delete account?',
-        message: 'This permanently removes your account and all of its data. This cannot be undone.',
+        header: t('settings.account.deleteHeader'),
+        message: t('settings.account.deleteMessage'),
         accept: deleteAccount
     });
 }
@@ -86,14 +90,14 @@ function submitDelete(acceptCallback) {
 </script>
 
 <template>
-    <SettingsSection title="Account" description="Sign-in and security.">
-        <SettingsRow label="Password" :description="`Use at least ${MIN_PASSWORD_LENGTH} characters.`" for="currentPassword">
+    <SettingsSection :title="$t('nav.account')" :description="$t('settings.account.description')">
+        <SettingsRow :label="$t('settings.account.password')" :description="$t('validation.passwordTooShort', { min: MIN_PASSWORD_LENGTH })" for="currentPassword">
             <Form :key="passwordFormKey" v-slot="$form" :initialValues="emptyPasswords" :resolver="passwordResolver" validateOnMount novalidate class="flex flex-col gap-4 md:w-80" @submit="onPasswordSubmit">
                 <div class="flex flex-col gap-1">
                     <Password
                         name="currentPassword"
                         inputId="currentPassword"
-                        placeholder="Current password"
+                        :placeholder="$t('settings.account.currentPassword')"
                         autocomplete="current-password"
                         :feedback="false"
                         toggleMask
@@ -101,28 +105,28 @@ function submitDelete(acceptCallback) {
                         :invalid="showError($form.currentPassword)"
                         :inputProps="{ 'aria-describedby': showError($form.currentPassword) ? 'current-password-error' : undefined }"
                     />
-                    <Message v-if="showError($form.currentPassword)" id="current-password-error" severity="error" size="small" variant="simple">{{ $form.currentPassword.error?.message }}</Message>
+                    <FieldError id="current-password-error" :field="$form.currentPassword" :show="showError($form.currentPassword)" />
                 </div>
 
                 <div class="flex flex-col gap-1">
                     <Password
                         name="newPassword"
-                        placeholder="New password"
-                        ariaLabel="New password"
+                        :placeholder="$t('auth.newPassword')"
+                        :ariaLabel="$t('auth.newPassword')"
                         autocomplete="new-password"
                         toggleMask
                         fluid
                         :invalid="showError($form.newPassword)"
                         :inputProps="{ 'aria-describedby': showError($form.newPassword) ? 'new-password-error' : undefined }"
                     />
-                    <Message v-if="showError($form.newPassword)" id="new-password-error" severity="error" size="small" variant="simple">{{ $form.newPassword.error?.message }}</Message>
+                    <FieldError id="new-password-error" :field="$form.newPassword" :show="showError($form.newPassword)" />
                 </div>
 
                 <div class="flex flex-col gap-1">
                     <Password
                         name="confirmPassword"
-                        placeholder="Confirm new password"
-                        ariaLabel="Confirm new password"
+                        :placeholder="$t('auth.confirmNewPassword')"
+                        :ariaLabel="$t('auth.confirmNewPassword')"
                         autocomplete="new-password"
                         :feedback="false"
                         toggleMask
@@ -130,19 +134,19 @@ function submitDelete(acceptCallback) {
                         :invalid="showError($form.confirmPassword)"
                         :inputProps="{ 'aria-describedby': showError($form.confirmPassword) ? 'confirm-password-error' : undefined }"
                     />
-                    <Message v-if="showError($form.confirmPassword)" id="confirm-password-error" severity="error" size="small" variant="simple">{{ $form.confirmPassword.error?.message }}</Message>
+                    <FieldError id="confirm-password-error" :field="$form.confirmPassword" :show="showError($form.confirmPassword)" />
                 </div>
 
-                <Button type="submit" label="Update password" class="self-start" :disabled="!$form.valid" :loading="updatingPassword" />
+                <Button type="submit" :label="$t('settings.account.updatePassword')" class="self-start" :disabled="!$form.valid" :loading="updatingPassword" />
             </Form>
         </SettingsRow>
 
-        <SettingsRow label="Sessions" description="Sign out of this device.">
-            <Button label="Sign out" icon="pi pi-sign-out" severity="secondary" outlined @click="signOut" />
+        <SettingsRow :label="$t('settings.account.sessions')" :description="$t('settings.account.sessionsDescription')">
+            <Button :label="$t('common.signOut')" icon="pi pi-sign-out" severity="secondary" outlined @click="signOut" />
         </SettingsRow>
 
-        <SettingsRow label="Delete account" description="Permanently remove your account and data.">
-            <Button label="Delete account" icon="pi pi-trash" severity="danger" outlined @click="confirmDeleteAccount" />
+        <SettingsRow :label="$t('settings.account.deleteAccount')" :description="$t('settings.account.deleteDescription')">
+            <Button :label="$t('settings.account.deleteAccount')" icon="pi pi-trash" severity="danger" outlined @click="confirmDeleteAccount" />
         </SettingsRow>
     </SettingsSection>
 
@@ -159,15 +163,17 @@ function submitDelete(acceptCallback) {
                 <p class="m-0 text-surface-600 dark:text-surface-300">{{ message.message }}</p>
 
                 <div class="flex flex-col gap-2">
-                    <label for="deleteConfirmation">
-                        Type <strong>{{ DELETE_PHRASE }}</strong> to confirm.
-                    </label>
+                    <i18n-t keypath="settings.account.typeToConfirm" tag="label" for="deleteConfirmation" scope="global">
+                        <template #phrase>
+                            <strong>{{ DELETE_PHRASE }}</strong>
+                        </template>
+                    </i18n-t>
                     <InputText id="deleteConfirmation" v-model="deleteConfirmation" autocomplete="off" spellcheck="false" autofocus fluid />
                 </div>
 
                 <div class="flex flex-col-reverse sm:flex-row sm:justify-end gap-2 mt-2">
-                    <Button type="button" label="Cancel" severity="secondary" outlined @click="rejectCallback" />
-                    <Button type="submit" label="Delete account" icon="pi pi-trash" severity="danger" :disabled="!canDelete" />
+                    <Button type="button" :label="$t('common.cancel')" severity="secondary" outlined @click="rejectCallback" />
+                    <Button type="submit" :label="$t('settings.account.deleteAccount')" icon="pi pi-trash" severity="danger" :disabled="!canDelete" />
                 </div>
             </form>
         </template>

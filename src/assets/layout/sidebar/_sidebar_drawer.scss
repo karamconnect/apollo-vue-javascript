@@ -62,7 +62,7 @@
                         transition: all 0.1s;
 
                         > span {
-                            margin-right: auto;
+                            margin-inline-end: auto;
                         }
 
                         .layout-menuitem-icon {
@@ -72,7 +72,7 @@
 
                         > .layout-menuitem-root-icon {
                             display: block;
-                            margin-right: 0.125rem;
+                            margin-inline-end: 0.125rem;
                             font-size: 1.25rem;
                         }
                     }

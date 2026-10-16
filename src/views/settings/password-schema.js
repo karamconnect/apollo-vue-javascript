@@ -2,10 +2,11 @@ import { z } from 'zod';
 
 export const MIN_PASSWORD_LENGTH = 8;
 
+// vue-i18n keys (`tooShort` takes `{min}`), translated where they are shown (components/forms/FieldError.vue).
 export const PASSWORD_ERRORS = {
-    currentRequired: 'Enter your current password.',
-    tooShort: `Use at least ${MIN_PASSWORD_LENGTH} characters.`,
-    mismatch: "Passwords don't match."
+    currentRequired: 'validation.currentPasswordRequired',
+    tooShort: 'validation.passwordTooShort',
+    mismatch: 'validation.passwordMismatch'
 };
 
 // Validates the Account > Password form. Passwords are never trimmed: spaces are significant.
