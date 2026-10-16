@@ -49,7 +49,7 @@ Vitest is pinned to v3 because v4+/v5 require Vite 6+ (project is on Vite 5). Te
 
 ## CI
 
-`.github/workflows/ci.yml` runs on pull requests only (opened/synchronize/reopened): three parallel jobs — **Lint** (`npm run lint:check`, the non-fixing variant of `npm run lint`), **Unit tests** (`npm test`) and **Build** (`npm run build`) — each doing `npm ci` with Node from `.nvmrc`. Keep `.nvmrc` in sync when changing Node versions, and keep job `name:`s stable (they are the status-check names).
+CI runs on [RWX](https://www.rwx.com) (`.rwx/ci.yml`; there are no GitHub Actions workflows). It runs on pull requests (opened/synchronize/reopened) as a task graph: `code` (git/clone, using the RWX GitHub App token since the repo is private) → `node` (nodejs/install, version from `.nvmrc`) → `npm-install` (`npm ci`, cached until `package.json`/`package-lock.json` change) → **lint** (`npm run lint:check`, ESLint problems annotated), **test** (`npm test` with a Vitest JSON report in `tmp/vitest.json`, so failures show inline; needs `includeTaskLocation` in `vite.config.mjs`) and **build** (`npm run build`) in parallel. Tasks are content-cached, so unchanged work is skipped. A new push cancels the PR's running CI (concurrency pool per PR number). Status checks are named Lint, Unit tests and Build (plus an overall CI check); keep those names stable, because branch protection requires them. Run it from local changes with `rwx run .rwx/ci.yml --open`. Pin package versions exactly; `rwx packages update` bumps them. Keep `.nvmrc` in sync when changing Node versions.
 
 ## Deployment
 
