@@ -1,5 +1,5 @@
 # CI for pull requests: lint, unit tests and build, run in parallel on one shared npm install.
-# Migrated from .github/workflows/ci.yml. Start a run from local changes with: rwx run .rwx/ci.yml --open
+# Replaced the GitHub Actions workflow. Start a run from local changes with: rwx run .rwx/ci.yml --open
 on:
   github:
     # Default actions are opened, reopened and synchronize, as in the GitHub workflow.

@@ -12,7 +12,7 @@ Lockfile is `package-lock.json` → npm.
 
 - `npm run dev` — Vite dev server
 - `npm run build` / `npm run preview`
-- `npm run lint` — ESLint with `--fix` (vue3-essential + prettier + `@intlify/vue-i18n`), also linting the locale JSON files
+- `npm run lint` — ESLint with `--fix` (vue3-essential + prettier + `@intlify/vue-i18n`), also linting the locale JSON files. The scripts name their targets (`src`, `scripts` and the root config files) instead of `.`, so ESLint never walks `node_modules`, `dist` or `original_template`, whatever the environment; add new top-level code folders there
 - `npm run format` — Prettier write (js/vue only). Don't point `prettier --write` at `src/assets/` — vendored Apollo styles, not in `.prettierignore`.
 
 - `npm test` — Vitest (run once); `npm run test:watch` for watch mode
@@ -49,7 +49,7 @@ Vitest is pinned to v3 because v4+/v5 require Vite 6+ (project is on Vite 5). Te
 
 ## CI
 
-`.github/workflows/ci.yml` runs on pull requests only (opened/synchronize/reopened): three parallel jobs — **Lint** (`npm run lint:check`, the non-fixing variant of `npm run lint`), **Unit tests** (`npm test`) and **Build** (`npm run build`) — each doing `npm ci` with Node from `.nvmrc`. Keep `.nvmrc` in sync when changing Node versions, and keep job `name:`s stable (they are the status-check names).
+CI runs on [RWX](https://www.rwx.com) (`.rwx/ci.yml`; there are no GitHub Actions workflows). It runs on pull requests (opened/synchronize/reopened) as a task graph: `code` (git/clone, using the RWX GitHub App token since the repo is private) → `node` (nodejs/install, version from `.nvmrc`) → `npm-install` (`npm ci`, cached until `package.json`/`package-lock.json` change) → **lint** (`npm run lint:check`, ESLint problems annotated), **test** (`npm test` with a Vitest JSON report in `tmp/vitest.json`, so failures show inline; needs `includeTaskLocation` in `vite.config.mjs`) and **build** (`npm run build`) in parallel. Tasks are content-cached, so unchanged work is skipped. A new push cancels the PR's running CI (concurrency pool per PR number). Status checks are named Lint, Unit tests and Build (plus an overall CI check); keep those names stable, because branch protection requires them. Run it from local changes with `rwx run .rwx/ci.yml --open`. Pin package versions exactly; `rwx packages update` bumps them. `.nvmrc` must hold an exact version (`24.22.0`, not `24`): RWX's `nodejs/install` rejects anything but `X.Y.Z`. Nothing in CI scans `node_modules`: lint names its folders, Vitest only includes `src/**/__tests__/**/*.spec.js`, and Tailwind only scans `index.html` and `src` (`source(none)` + `@source` in `assets/tailwind.css`, so class names used elsewhere aren't generated).
 
 ## Deployment
 

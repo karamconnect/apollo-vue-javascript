@@ -22,6 +22,8 @@ export default defineConfig({
     },
     test: {
         environment: 'jsdom',
+        // Only the app's own tests (in __tests__ folders next to the code), never anything under node_modules
+        include: ['src/**/__tests__/**/*.spec.js'],
         // Test locations in the JSON report, so RWX can show failures inline (.rwx/ci.yml)
         includeTaskLocation: true
     }

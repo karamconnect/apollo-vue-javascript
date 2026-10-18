@@ -1,4 +1,8 @@
-@import 'tailwindcss';
+/* Class names are only looked for in the app's own files (paths relative to this file), so the scan never depends
+   on ignore rules to skip node_modules, dist or original_template. */
+@import 'tailwindcss' source(none);
+@source '../../index.html';
+@source '../../src';
 
 @plugin 'tailwindcss-primeui';
 
