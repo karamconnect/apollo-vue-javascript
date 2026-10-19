@@ -29,7 +29,7 @@ const categories = computed(() => [
                         d="M0,64L48,90.7C96,117,192,171,288,208C384,245,480,267,576,256C672,245,768,203,864,165.3C960,128,1056,96,1152,74.7C1248,53,1344,43,1392,37.3L1440,32L1440,0L1392,0C1344,0,1248,0,1152,0C1056,0,960,0,864,0C768,0,672,0,576,0C480,0,384,0,288,0C192,0,96,0,48,0L0,0Z"
                     ></path>
                 </svg>
-                <div class="font-bold mb-8 text-4xl z-10">{{ $t('help.title') }}</div>
+                <h1 class="font-bold mt-0 mb-8 text-4xl z-10">{{ $t('help.title') }}</h1>
                 <IconField class="w-9/12 md:w-6/12">
                     <InputIcon class="pi pi-search" />
                     <InputText id="name" type="text" :placeholder="$t('common.search')" :aria-label="$t('common.search')" :style="{ borderRadius: '2rem' }" class="w-full" />

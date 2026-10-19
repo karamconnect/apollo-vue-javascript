@@ -1,4 +1,5 @@
 <script setup>
+import { passwordInputProps } from '@/components/forms/password';
 import { authClient } from '@/auth/client';
 import { authErrorMessage } from '@/auth/errors';
 import { registerSchema } from '@/auth/schemas';
@@ -78,7 +79,7 @@ async function onSubmit({ valid, values }) {
                         autocomplete="new-password"
                         toggleMask
                         fluid
-                        :inputProps="{ 'aria-describedby': $form.password?.invalid ? 'password-error' : undefined }"
+                        :inputProps="passwordInputProps({ 'aria-describedby': $form.password?.invalid ? 'password-error' : undefined })"
                         :inputStyle="{ paddingLeft: '2.5rem' }"
                     />
                 </IconField>
@@ -96,7 +97,7 @@ async function onSubmit({ valid, values }) {
                         :feedback="false"
                         toggleMask
                         fluid
-                        :inputProps="{ 'aria-describedby': $form.confirmPassword?.invalid ? 'confirm-password-error' : undefined }"
+                        :inputProps="passwordInputProps({ 'aria-describedby': $form.confirmPassword?.invalid ? 'confirm-password-error' : undefined })"
                         :inputStyle="{ paddingLeft: '2.5rem' }"
                     />
                 </IconField>
@@ -110,7 +111,7 @@ async function onSubmit({ valid, values }) {
                         <i18n-t keypath="auth.register.acceptTerms" scope="global">
                             <template #terms>
                                 <!-- New tab, so the half-filled form isn't lost. -->
-                                <router-link :to="{ name: 'terms' }" target="_blank" class="text-primary hover:underline">{{ $t('nav.terms') }}</router-link>
+                                <router-link :to="{ name: 'terms' }" target="_blank" class="text-primary underline!">{{ $t('nav.terms') }}</router-link>
                             </template>
                         </i18n-t>
                     </label>

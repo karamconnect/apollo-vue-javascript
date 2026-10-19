@@ -27,7 +27,7 @@ on:
 # A new push to the same PR cancels the run that's still in progress (GitHub `concurrency` +
 # `cancel-in-progress`). Not applied to local CLI runs, which have no PR number.
 concurrency-pools:
-  - id: karamconnect/apollo_template:pr-${{ init.pr-number }}
+  - id: Karam-Connect/apollo_template:pr-${{ init.pr-number }}
     if: ${{ init.pr-number != '' }}
     capacity: 1
     on-overflow: cancel-running
@@ -40,7 +40,7 @@ tasks:
   - key: code
     call: git/clone 2.2.0
     with:
-      repository: https://github.com/karamconnect/apollo_template.git
+      repository: https://github.com/Karam-Connect/apollo_template.git
       ref: ${{ init.commit-sha }}
       github-token: ${{ github.token }} # private repository: token from the RWX GitHub App
 

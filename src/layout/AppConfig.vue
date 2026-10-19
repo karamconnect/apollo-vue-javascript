@@ -6,6 +6,9 @@ import { useI18n } from 'vue-i18n';
 import { useRoute } from 'vue-router';
 
 const layout = useLayoutStore();
+
+// With no surface saved, the preset's default (slate in light mode, zinc in dark) is the selected one.
+const isSelectedSurface = (name) => (layout.config.surface ?? (layout.isDarkTheme ? 'zinc' : 'slate')) === name;
 const route = useRoute();
 const { t } = useI18n();
 
@@ -38,15 +41,16 @@ function isTransparentDisabled(option) {
     <div class="grid grid-cols-12 gap-6">
         <div class="col-span-12 md:col-span-6 flex flex-col gap-2">
             <span class="font-medium">{{ $t('settings.appearance.primary') }}</span>
-            <div class="flex gap-2 flex-wrap">
+            <div class="flex gap-3 flex-wrap">
                 <button
                     v-for="primaryColor of primaryColors"
                     :key="primaryColor.name"
                     type="button"
                     :title="primaryColor.name"
                     :aria-label="primaryColor.name"
+                    :aria-pressed="layout.config.primary === primaryColor.name"
                     @click="layout.setPrimary(primaryColor.name)"
-                    :class="['cursor-pointer w-6 h-6 rounded-full flex shrink-0 items-center justify-center p-0 outline-none outline-offset-1', { 'outline-primary': layout.config.primary === primaryColor.name }]"
+                    :class="['swatch', { 'swatch-selected': layout.config.primary === primaryColor.name }]"
                     :style="{ backgroundColor: `${primaryColor.name === 'noir' ? 'var(--text-color)' : primaryColor.palette['500']}` }"
                 ></button>
             </div>
@@ -54,18 +58,16 @@ function isTransparentDisabled(option) {
 
         <div class="col-span-12 md:col-span-6 flex flex-col gap-2">
             <span class="font-medium">{{ $t('settings.appearance.surface') }}</span>
-            <div class="flex gap-2 flex-wrap">
+            <div class="flex gap-3 flex-wrap">
                 <button
                     v-for="surface of surfaces"
                     :key="surface.name"
                     type="button"
                     :title="surface.name"
                     :aria-label="surface.name"
+                    :aria-pressed="isSelectedSurface(surface.name)"
                     @click="layout.setSurface(surface.name)"
-                    :class="[
-                        'cursor-pointer w-6 h-6 rounded-full flex shrink-0 items-center justify-center p-0 outline-none outline-offset-1',
-                        { 'outline-primary': layout.config.surface ? layout.config.surface === surface.name : layout.isDarkTheme ? surface.name === 'zinc' : surface.name === 'slate' }
-                    ]"
+                    :class="['swatch', { 'swatch-selected': isSelectedSurface(surface.name) }]"
                     :style="{ backgroundColor: `${surface.palette['500']}` }"
                 ></button>
             </div>
@@ -92,3 +94,28 @@ function isTransparentDisabled(option) {
         </div>
     </div>
 </template>
+
+<style scoped>
+/* 32px targets; the selected colour gets a ring in the text colour, keyboard focus the focus-ring colour. */
+.swatch {
+    width: 2rem;
+    height: 2rem;
+    flex-shrink: 0;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    cursor: pointer;
+    outline: 2px solid transparent;
+    outline-offset: 2px;
+}
+
+.swatch-selected {
+    outline-color: var(--p-text-color);
+}
+
+.swatch:focus-visible {
+    outline: var(--p-focus-ring-width) var(--p-focus-ring-style) var(--p-focus-ring-color);
+    outline-offset: 2px;
+    box-shadow: 0 0 0 calc(2px + var(--p-focus-ring-width)) var(--p-content-background);
+}
+</style>

@@ -1,4 +1,5 @@
 <script setup>
+import { passwordInputProps } from '@/components/forms/password';
 import { authClient } from '@/auth/client';
 import { authErrorMessage } from '@/auth/errors';
 import { useSignOut } from '@/auth/useSignOut';
@@ -103,7 +104,7 @@ function submitDelete(acceptCallback) {
                         toggleMask
                         fluid
                         :invalid="showError($form.currentPassword)"
-                        :inputProps="{ 'aria-describedby': showError($form.currentPassword) ? 'current-password-error' : undefined }"
+                        :inputProps="passwordInputProps({ 'aria-describedby': showError($form.currentPassword) ? 'current-password-error' : undefined })"
                     />
                     <FieldError id="current-password-error" :field="$form.currentPassword" :show="showError($form.currentPassword)" />
                 </div>
@@ -117,7 +118,7 @@ function submitDelete(acceptCallback) {
                         toggleMask
                         fluid
                         :invalid="showError($form.newPassword)"
-                        :inputProps="{ 'aria-describedby': showError($form.newPassword) ? 'new-password-error' : undefined }"
+                        :inputProps="passwordInputProps({ 'aria-describedby': showError($form.newPassword) ? 'new-password-error' : undefined })"
                     />
                     <FieldError id="new-password-error" :field="$form.newPassword" :show="showError($form.newPassword)" />
                 </div>
@@ -132,7 +133,7 @@ function submitDelete(acceptCallback) {
                         toggleMask
                         fluid
                         :invalid="showError($form.confirmPassword)"
-                        :inputProps="{ 'aria-describedby': showError($form.confirmPassword) ? 'confirm-password-error' : undefined }"
+                        :inputProps="passwordInputProps({ 'aria-describedby': showError($form.confirmPassword) ? 'confirm-password-error' : undefined })"
                     />
                     <FieldError id="confirm-password-error" :field="$form.confirmPassword" :show="showError($form.confirmPassword)" />
                 </div>

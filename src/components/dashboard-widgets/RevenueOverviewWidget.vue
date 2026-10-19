@@ -130,7 +130,7 @@ watch(
 <template>
     <div class="card h-full">
         <div class="flex items-start justify-between mb-12">
-            <span class="text-surface-900 dark:text-surface-0 text-xl font-semibold">{{ $t('dashboard.revenueOverview') }}</span>
+            <h2 class="text-surface-900 dark:text-surface-0 text-xl font-semibold m-0">{{ $t('dashboard.revenueOverview') }}</h2>
             <Select :options="weekOptions" :modelValue="selectedWeek.value" class="min-w-40" optionLabel="label" optionValue="value" :aria-label="$t('dashboard.revenueOverview')" @update:modelValue="(value) => onWeekChange(value)"></Select>
         </div>
         <Chart type="bar" :height="300" :data="barData" :options="barOptions"></Chart>

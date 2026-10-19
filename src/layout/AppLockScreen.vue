@@ -1,4 +1,5 @@
 <script setup>
+import { passwordInputProps } from '@/components/forms/password';
 import { authClient } from '@/auth/client';
 import { DEFAULT_AVATAR } from '@/auth/useAvatar';
 import { useSignOut } from '@/auth/useSignOut';
@@ -67,7 +68,7 @@ async function unlock() {
                             toggleMask
                             fluid
                             :invalid="Boolean(error)"
-                            :inputProps="{ 'aria-describedby': error ? 'unlock-error' : undefined }"
+                            :inputProps="passwordInputProps({ 'aria-describedby': error ? 'unlock-error' : undefined })"
                             :inputStyle="{ paddingLeft: '2.5rem' }"
                         />
                     </IconField>

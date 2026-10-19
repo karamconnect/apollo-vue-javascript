@@ -1,12 +1,15 @@
 <script setup>
 import { useLayoutStore } from '@/stores/layout';
 import { onClickOutside, useIntersectionObserver, useMediaQuery, useTimeoutFn } from '@vueuse/core';
-import { nextTick, ref, shallowRef, watch } from 'vue';
+import { computed, nextTick, ref, shallowRef, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import AppMenu from './AppMenu.vue';
 
 const BREAKPOINT = 992;
 const layout = useLayoutStore();
+
+// The pin button only does something in the modes where the menu expands on hover.
+const canAnchor = computed(() => ['reveal', 'drawer'].includes(layout.config.menuMode));
 const route = useRoute();
 const menuContainerRef = ref(null);
 const sidebarRef = ref(null);
@@ -109,10 +112,10 @@ const onMenuScroll = () => {
 </script>
 
 <template>
-    <div ref="sidebarRef" class="layout-sidebar" @mouseenter="onMouseEnter" @mouseleave="onMouseLeave">
+    <nav ref="sidebarRef" class="layout-sidebar" :aria-label="$t('a11y.mainMenu')" @mouseenter="onMouseEnter" @mouseleave="onMouseLeave">
         <div class="sidebar-header">
-            <router-link :to="{ name: 'dashboard' }" class="app-logo">
-                <svg viewBox="0 0 124 22" fill="none" xmlns="http://www.w3.org/2000/svg" class="app-logo-normal">
+            <router-link :to="{ name: 'dashboard' }" class="app-logo" :aria-label="$t('a11y.homeLink')">
+                <svg viewBox="0 0 124 22" fill="none" xmlns="http://www.w3.org/2000/svg" class="app-logo-normal" aria-hidden="true">
                     <path d="M10.4851 0L0 20.9465H3.53702L10.4856 6.07843L17.2944 20.9465H20.9715L10.4851 0Z" fill="var(--logo-color)" />
                     <path d="M13.84 15.7927L16.2077 21.0016H11.7682L13.84 15.7927Z" fill="var(--logo-color)" />
                     <path d="M9.04645 21.0016L6.67875 15.7927L4.60701 21.0016H9.04645Z" fill="var(--logo-color)" />
@@ -132,16 +135,17 @@ const onMenuScroll = () => {
                         fill="var(--logo-color)"
                     />
                 </svg>
-                <svg width="21" height="22" viewBox="0 0 21 22" fill="none" xmlns="http://www.w3.org/2000/svg" class="app-logo-small">
+                <svg width="21" height="22" viewBox="0 0 21 22" fill="none" xmlns="http://www.w3.org/2000/svg" class="app-logo-small" aria-hidden="true">
                     <path d="M10.4851 0L0 20.9465H3.53702L10.4856 6.07843L17.2944 20.9465H20.9715L10.4851 0Z" fill="var(--logo-color)" />
                     <path d="M13.8399 15.793L16.2076 21.0019H11.7681L13.8399 15.793Z" fill="var(--logo-color)" />
                     <path d="M9.04637 21.0019L6.67867 15.793L4.60693 21.0019H9.04637Z" fill="var(--logo-color)" />
                 </svg>
             </router-link>
-            <button class="layout-sidebar-anchor z-20" type="button" @click="onAnchorToggle"></button>
+            <!-- Pins the menu open; only the reveal and drawer modes show it. -->
+            <button v-if="canAnchor" class="layout-sidebar-anchor z-20" type="button" :aria-label="$t('a11y.pinMenu')" :aria-pressed="layout.ui.anchored" @click="onAnchorToggle"></button>
         </div>
         <div ref="menuContainerRef" class="layout-menu-container" @scroll="onMenuScroll">
             <AppMenu />
         </div>
-    </div>
+    </nav>
 </template>

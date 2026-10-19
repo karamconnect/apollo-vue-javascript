@@ -171,7 +171,8 @@
             "bioDescription": "A short introduction.",
             "notSaved": "Not saved",
             "fixFields": "Please fix the highlighted fields.",
-            "savedDetail": "Your profile has been updated."
+            "savedDetail": "Your profile has been updated.",
+            "photoAlt": "Your profile photo"
         },
         "account": {
             "description": "Sign-in and security.",
@@ -256,7 +257,9 @@
         "inStock": "In stock",
         "lowStock": "Low stock",
         "outOfStock": "Out of stock",
-        "topProducts": "Top Products"
+        "topProducts": "Top Products",
+        "actions": "Actions",
+        "rating": "Rated {n} out of 5"
     },
     "help": {
         "title": "How can we help?",
@@ -292,5 +295,13 @@
         "liabilityBody": "To the extent permitted by law, the application is provided \"as is\" and we are not liable for indirect or consequential losses arising from its use.",
         "contactTitle": "Contact",
         "contactBody": "Questions about these terms can be sent to {email}."
+    },
+    "a11y": {
+        "skipToContent": "Skip to main content",
+        "mainMenu": "Main menu",
+        "toggleMenu": "Show or hide the menu",
+        "pinMenu": "Keep the menu open",
+        "homeLink": "Apollo, go to the dashboard",
+        "breadcrumb": "Breadcrumb"
     }
 }

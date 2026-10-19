@@ -52,7 +52,7 @@ onMounted(() => {
 <template>
     <div class="card">
         <div class="flex flex-col md:flex-row md:items-start md:justify-between mb-4">
-            <div class="text-surface-900 dark:text-surface-0 text-xl font-semibold mb-4 md:mb-0">{{ $t('dashboard.recentSales') }}</div>
+            <h2 class="text-surface-900 dark:text-surface-0 text-xl font-semibold mt-0 mb-4 md:mb-0">{{ $t('dashboard.recentSales') }}</h2>
             <div class="inline-flex items-center">
                 <IconField>
                     <InputIcon class="pi pi-search" />
@@ -84,6 +84,9 @@ onMounted(() => {
                 </template>
             </Column>
             <Column class="text-center">
+                <template #header>
+                    <span class="sr-only">{{ $t('dashboard.actions') }}</span>
+                </template>
                 <template #body="{ data }">
                     <Button type="button" icon="pi pi-search" outlined rounded :aria-label="$t('dashboard.viewProduct', { name: data.name })"></Button>
                 </template>

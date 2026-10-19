@@ -6,7 +6,7 @@ import { createRouter, createWebHistory } from 'vue-router';
 import { createAuthGuard } from './guard';
 
 // Route meta: `requiresAuth`, `guestOnly` and `roles` (e.g. `roles: ['admin']`) — see ./guard.js.
-// `breadcrumb` and `search.title` hold i18n keys (src/i18n/locales). `search: { icon, keywords, title? }` lists the page in the topbar search — see @/search/pages.js.
+// `title` (browser tab, see ./title.js; defaults to the breadcrumb), `breadcrumb` and `search.title` hold i18n keys (src/i18n/locales). `search: { icon, keywords, title? }` lists the page in the topbar search — see @/search/pages.js.
 
 const router = createRouter({
     history: createWebHistory(),
@@ -114,42 +114,43 @@ const router = createRouter({
                 {
                     path: 'login',
                     name: 'login',
-                    meta: { guestOnly: true },
+                    meta: { title: 'auth.logIn', guestOnly: true },
                     component: () => import('@/views/auth/Login.vue')
                 },
                 {
                     path: 'register',
                     name: 'register',
-                    meta: { guestOnly: true },
+                    meta: { title: 'auth.register.title', guestOnly: true },
                     component: () => import('@/views/auth/Register.vue')
                 },
                 {
                     path: 'forgot-password',
                     name: 'forgot-password',
-                    meta: { guestOnly: true },
+                    meta: { title: 'auth.forgot.title', guestOnly: true },
                     component: () => import('@/views/auth/ForgotPassword.vue')
                 },
                 {
                     path: 'reset-password',
                     name: 'reset-password',
-                    meta: { guestOnly: true },
+                    meta: { title: 'auth.reset.title', guestOnly: true },
                     component: () => import('@/views/auth/ResetPassword.vue')
                 },
                 {
                     path: 'verification',
                     name: 'verification',
-                    meta: { requiresAuth: true },
+                    meta: { title: 'auth.verify.title', requiresAuth: true },
                     component: () => import('@/views/auth/Verification.vue')
                 },
                 {
                     path: 'access',
                     name: 'access-denied',
-                    meta: { requiresAuth: true },
+                    meta: { title: 'status.accessDenied', requiresAuth: true },
                     component: () => import('@/views/auth/Access.vue')
                 },
                 {
                     path: 'error',
                     name: 'error',
+                    meta: { title: 'status.error' },
                     component: ErrorPage
                 }
             ]
@@ -158,6 +159,7 @@ const router = createRouter({
             path: '/terms',
             name: 'terms',
             meta: {
+                title: 'nav.terms',
                 search: { title: 'nav.terms', icon: 'pi pi-file', keywords: ['legal', 'terms of service', 'privacy'] }
             },
             component: () => import('@/views/legal/Terms.vue')
@@ -166,7 +168,7 @@ const router = createRouter({
             // Signed-out users are sent to login first, so unknown paths don't reveal anything.
             path: '/:pathMatch(.*)*',
             name: 'notfound',
-            meta: { requiresAuth: true },
+            meta: { title: 'status.notFound', requiresAuth: true },
             component: ErrorPage,
             props: { notFound: true }
         }

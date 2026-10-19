@@ -171,7 +171,8 @@
             "bioDescription": "简短的自我介绍。",
             "notSaved": "未保存",
             "fixFields": "请修正标出的字段。",
-            "savedDetail": "你的个人资料已更新。"
+            "savedDetail": "你的个人资料已更新。",
+            "photoAlt": "你的个人资料照片"
         },
         "account": {
             "description": "登录与安全。",
@@ -256,7 +257,9 @@
         "inStock": "有货",
         "lowStock": "库存不足",
         "outOfStock": "缺货",
-        "topProducts": "热门产品"
+        "topProducts": "热门产品",
+        "actions": "操作",
+        "rating": "评分：{n}/5"
     },
     "help": {
         "title": "我们能帮你什么？",
@@ -292,5 +295,13 @@
         "liabilityBody": "在法律允许的范围内，本应用按“原样”提供，我们对因使用本应用而产生的间接或后果性损失不承担责任。",
         "contactTitle": "联系我们",
         "contactBody": "有关这些条款的问题，请发送至 {email}。"
+    },
+    "a11y": {
+        "skipToContent": "跳到主要内容",
+        "mainMenu": "主菜单",
+        "toggleMenu": "显示或隐藏菜单",
+        "pinMenu": "保持菜单展开",
+        "homeLink": "Apollo，前往仪表板",
+        "breadcrumb": "面包屑导航"
     }
 }

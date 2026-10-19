@@ -122,9 +122,15 @@ describe('i18n', () => {
 
         it('keeps the bundled messages when the file is missing or the CDN is unreachable', async () => {
             await setLocale('fr');
-            vi.stubGlobal('fetch', vi.fn(async () => ({ ok: false })));
+            vi.stubGlobal(
+                'fetch',
+                vi.fn(async () => ({ ok: false }))
+            );
             await loadPublished('fr', 'https://cdn.example/abc');
-            vi.stubGlobal('fetch', vi.fn(async () => Promise.reject(new TypeError('Failed to fetch'))));
+            vi.stubGlobal(
+                'fetch',
+                vi.fn(async () => Promise.reject(new TypeError('Failed to fetch')))
+            );
             await loadPublished('de', 'https://cdn.example/abc');
 
             expect(i18n.global.t('nav.settings')).toBe('Paramètres');

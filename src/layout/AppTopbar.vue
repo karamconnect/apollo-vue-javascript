@@ -23,9 +23,9 @@ function goToPage({ value }) {
 </script>
 
 <template>
-    <div class="layout-topbar">
+    <header class="layout-topbar">
         <div class="topbar-start">
-            <Button type="button" class="topbar-menubutton p-trigger" @click="layout.toggleMenu">
+            <Button type="button" class="topbar-menubutton p-trigger" :aria-label="$t('a11y.toggleMenu')" @click="layout.toggleMenu">
                 <i class="pi pi-bars"></i>
             </Button>
 
@@ -69,7 +69,7 @@ function goToPage({ value }) {
                 </li>
             </ul>
         </div>
-    </div>
+    </header>
 </template>
 
 <style lang="scss" scoped></style>

@@ -11,7 +11,7 @@ const knobValue = ref(90);
             <div class="flex justify-between items-start mt-4">
                 <div class="w-6/12">
                     <span class="text-4xl font-bold text-surface-900 dark:text-surface-0">120</span>
-                    <div class="text-green-500">
+                    <div class="text-green-700 dark:text-green-400">
                         <span class="font-medium">+12%</span>
                         <i class="pi pi-arrow-up text-xs ms-2"></i>
                     </div>
@@ -34,7 +34,7 @@ const knobValue = ref(90);
             <div class="flex justify-between items-start mt-4">
                 <div class="w-6/12">
                     <span class="text-4xl font-bold text-surface-900 dark:text-surface-0">{{ $n(4500, 'currencyWhole') }}</span>
-                    <div class="text-green-500">
+                    <div class="text-green-700 dark:text-green-400">
                         <span class="font-medium">+20%</span>
                         <i class="pi pi-arrow-up text-xs ms-2"></i>
                     </div>
@@ -56,7 +56,7 @@ const knobValue = ref(90);
             <div class="flex justify-between items-start mt-4">
                 <div class="w-6/12">
                     <span class="text-4xl font-bold text-surface-900 dark:text-surface-0">360</span>
-                    <div class="text-pink-500">
+                    <div class="text-pink-700 dark:text-pink-400">
                         <span class="font-medium">+24%</span>
                         <i class="pi pi-arrow-down text-xs ms-2"></i>
                     </div>
@@ -78,7 +78,7 @@ const knobValue = ref(90);
             <div class="flex justify-between items-start mt-4">
                 <div class="w-6/12">
                     <span class="text-4xl font-bold text-surface-900 dark:text-surface-0">164</span>
-                    <div class="text-green-500">
+                    <div class="text-green-700 dark:text-green-400">
                         <span class="font-medium">+30%</span>
                         <i class="pi pi-arrow-up text-xs ms-2"></i>
                     </div>

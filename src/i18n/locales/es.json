@@ -171,7 +171,8 @@
             "bioDescription": "Una breve presentación.",
             "notSaved": "No guardado",
             "fixFields": "Corrige los campos marcados.",
-            "savedDetail": "Tu perfil se ha actualizado."
+            "savedDetail": "Tu perfil se ha actualizado.",
+            "photoAlt": "Tu foto de perfil"
         },
         "account": {
             "description": "Inicio de sesión y seguridad.",
@@ -256,7 +257,9 @@
         "inStock": "En stock",
         "lowStock": "Pocas unidades",
         "outOfStock": "Agotado",
-        "topProducts": "Productos destacados"
+        "topProducts": "Productos destacados",
+        "actions": "Acciones",
+        "rating": "Valoración: {n} de 5"
     },
     "help": {
         "title": "¿Cómo podemos ayudarte?",
@@ -292,5 +295,13 @@
         "liabilityBody": "En la medida en que lo permita la ley, la aplicación se ofrece \"tal cual\" y no somos responsables de las pérdidas indirectas o consecuentes derivadas de su uso.",
         "contactTitle": "Contacto",
         "contactBody": "Puedes enviar tus preguntas sobre estos términos a {email}."
+    },
+    "a11y": {
+        "skipToContent": "Saltar al contenido principal",
+        "mainMenu": "Menú principal",
+        "toggleMenu": "Mostrar u ocultar el menú",
+        "pinMenu": "Mantener el menú abierto",
+        "homeLink": "Apollo, ir al panel",
+        "breadcrumb": "Ruta de navegación"
     }
 }

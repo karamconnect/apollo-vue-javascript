@@ -171,7 +171,8 @@
             "bioDescription": "Une courte présentation.",
             "notSaved": "Non enregistré",
             "fixFields": "Veuillez corriger les champs signalés.",
-            "savedDetail": "Votre profil a été mis à jour."
+            "savedDetail": "Votre profil a été mis à jour.",
+            "photoAlt": "Ta photo de profil"
         },
         "account": {
             "description": "Connexion et sécurité.",
@@ -256,7 +257,9 @@
         "inStock": "En stock",
         "lowStock": "Stock faible",
         "outOfStock": "En rupture",
-        "topProducts": "Meilleurs produits"
+        "topProducts": "Meilleurs produits",
+        "actions": "Actions",
+        "rating": "Note : {n} sur 5"
     },
     "help": {
         "title": "Comment pouvons-nous vous aider ?",
@@ -292,5 +295,13 @@
         "liabilityBody": "Dans les limites autorisées par la loi, l'application est fournie « en l'état » et nous ne sommes pas responsables des pertes indirectes ou consécutives liées à son utilisation.",
         "contactTitle": "Contact",
         "contactBody": "Vous pouvez envoyer vos questions sur ces conditions à {email}."
+    },
+    "a11y": {
+        "skipToContent": "Aller au contenu principal",
+        "mainMenu": "Menu principal",
+        "toggleMenu": "Afficher ou masquer le menu",
+        "pinMenu": "Garder le menu ouvert",
+        "homeLink": "Apollo, aller au tableau de bord",
+        "breadcrumb": "Fil d’Ariane"
     }
 }

@@ -55,6 +55,15 @@ export const useLayoutStore = defineStore('layout', () => {
         ui.value.mobileMenuActive = false;
     }
 
+    /** Closes the menu where it covers the page (mobile, or overlay mode). Returns whether it was open. */
+    function closeMenuOverlay() {
+        const wasOpen = ui.value.mobileMenuActive || ui.value.overlayMenuActive;
+        ui.value.mobileMenuActive = false;
+        ui.value.overlayMenuActive = false;
+
+        return wasOpen;
+    }
+
     function toggleProfileSidebar() {
         ui.value.profileSidebarVisible = !ui.value.profileSidebarVisible;
     }
@@ -153,6 +162,7 @@ export const useLayoutStore = defineStore('layout', () => {
         isDesktop,
         toggleMenu,
         hideMobileMenu,
+        closeMenuOverlay,
         toggleProfileSidebar,
         setMenuMode,
         setMenuTheme,

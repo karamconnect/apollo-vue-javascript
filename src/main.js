@@ -4,8 +4,9 @@ import App from './App.vue';
 import router from './router';
 
 import { installFlags } from '@/flags';
-import { installI18n, syncPrimeVueLocale } from '@/i18n';
+import { i18n, installI18n, syncPrimeVueLocale } from '@/i18n';
 import { loadPreset } from '@/layout/theme';
+import { installPageTitle } from '@/router/title';
 import { useLayoutStore } from '@/stores/layout';
 import PrimeVue from 'primevue/config';
 import ConfirmationService from 'primevue/confirmationservice';
@@ -20,6 +21,7 @@ app.use(createPinia());
 app.use(router);
 installFlags(app);
 const localeReady = installI18n(app); // saved UI language (Settings > Preferences)
+installPageTitle(router, i18n); // browser tab title per page, in the current language
 
 const layout = useLayoutStore();
 

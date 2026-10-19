@@ -1,4 +1,5 @@
 <script setup>
+import { passwordInputProps } from '@/components/forms/password';
 import { authClient } from '@/auth/client';
 import { authErrorMessage } from '@/auth/errors';
 import { resetPasswordSchema } from '@/auth/schemas';
@@ -73,7 +74,7 @@ async function onSubmit({ valid, values }) {
                             autocomplete="new-password"
                             toggleMask
                             fluid
-                            :inputProps="{ 'aria-describedby': $form.password?.invalid ? 'password-error' : undefined }"
+                            :inputProps="passwordInputProps({ 'aria-describedby': $form.password?.invalid ? 'password-error' : undefined })"
                             :inputStyle="{ paddingLeft: '2.5rem' }"
                         />
                     </IconField>
@@ -91,7 +92,7 @@ async function onSubmit({ valid, values }) {
                             :feedback="false"
                             toggleMask
                             fluid
-                            :inputProps="{ 'aria-describedby': $form.confirmPassword?.invalid ? 'confirm-password-error' : undefined }"
+                            :inputProps="passwordInputProps({ 'aria-describedby': $form.confirmPassword?.invalid ? 'confirm-password-error' : undefined })"
                             :inputStyle="{ paddingLeft: '2.5rem' }"
                         />
                     </IconField>

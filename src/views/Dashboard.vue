@@ -7,6 +7,8 @@ import TopProductsWidget from '@/components/dashboard-widgets/TopProductsWidget.
 </script>
 
 <template>
+    <!-- The breadcrumb already shows the page name, so the heading is for screen readers only. -->
+    <h1 class="sr-only">{{ $t('nav.dashboard') }}</h1>
     <div class="grid grid-cols-12 gap-8">
         <StatsEcommerceWidget />
         <div class="col-span-12 xl:col-span-9">

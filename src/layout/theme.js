@@ -72,11 +72,90 @@ export const surfaces = [
 ];
 
 // Semantic primary-color overrides for the chosen palette ('noir' maps primary onto the surface scale).
+// WCAG relative luminance and contrast ratio of two #rrggbb colours.
+function luminance(hex) {
+    const [r, g, b] = [1, 3, 5].map((i) => {
+        const c = parseInt(hex.slice(i, i + 2), 16) / 255;
+        return c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4;
+    });
+    return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+}
+
+export function contrastRatio(a, b) {
+    const [light, dark] = [luminance(a), luminance(b)].sort((x, y) => y - x);
+    return (light + 0.05) / (dark + 0.05);
+}
+
+const SHADES = [500, 600, 700, 800, 900];
+
+// Light-mode backgrounds the primary colour sits on: white cards and the light page background (surface-100).
+const LIGHT_BACKGROUNDS = ['#ffffff', '#f1f5f9'];
+
+/**
+ * The lightest shade from 500 up with at least 4.5:1 (WCAG AA for normal text) against white and the page
+ * background. In light mode the primary colour is used both behind white text (buttons) and as text, icons and
+ * focus rings on those backgrounds: 700 for most palettes, 600 for blue/indigo/violet/purple, 800 for yellow.
+ */
+export function accessibleShade(palette) {
+    return SHADES.find((shade) => LIGHT_BACKGROUNDS.every((background) => contrastRatio(palette[shade], background) >= 4.5)) ?? 900;
+}
+
+// Light-mode filled severity buttons put white text on the 500 shade (2.3–4.0:1); these shades reach 4.5:1.
+const SEVERITY_SHADES = { success: ['green', 700], info: ['sky', 700], warn: ['orange', 700], help: ['purple', 600], danger: ['red', 600] };
+
+function severityButton(palette, shade) {
+    const tone = (step) => `{${palette}.${Math.min(shade + step * 100, 950)}}`;
+
+    return {
+        background: tone(0),
+        hoverBackground: tone(1),
+        activeBackground: tone(2),
+        borderColor: tone(0),
+        hoverBorderColor: tone(1),
+        activeBorderColor: tone(2),
+        color: '#ffffff',
+        hoverColor: '#ffffff',
+        activeColor: '#ffffff',
+        focusRing: { color: tone(0), shadow: 'none' }
+    };
+}
+
+const severityTokens = (build) => Object.fromEntries(Object.entries(SEVERITY_SHADES).map(([severity, [palette, shade]]) => [severity, build(palette, shade)]));
+
+// Component tokens changed for WCAG AA contrast in light mode, applied with every primary colour.
+export const accessibleComponents = {
+    button: {
+        colorScheme: {
+            light: {
+                root: severityTokens((palette, shade) => severityButton(palette, shade)),
+                // Outlined and text buttons use the colour as text on white.
+                outlined: severityTokens((palette, shade) => ({ color: `{${palette}.${shade}}` })),
+                text: severityTokens((palette, shade) => ({ color: `{${palette}.${shade}}` }))
+            }
+        }
+    },
+    // Dark-mode message text uses the 500 shades (blue is 3.9:1 on the dark card); 400 is lighter.
+    message: {
+        colorScheme: {
+            dark: Object.fromEntries(
+                Object.entries({ info: 'blue', success: 'green', warn: 'yellow', error: 'red' }).map(([severity, palette]) => [severity, { color: `{${palette}.400}`, outlined: { color: `{${palette}.400}` }, simple: { color: `{${palette}.400}` } }])
+            )
+        }
+    },
+    // Unselected SelectButton/ToggleButton labels: surface-500 on surface-100 is 4.3:1.
+    togglebutton: {
+        colorScheme: {
+            light: { root: { color: '{surface.600}' }, icon: { color: '{surface.600}' } }
+        }
+    }
+};
+
 export function getPresetExt(primaryName) {
     const color = primaryColors.find((c) => c.name === primaryName) ?? primaryColors.find((c) => c.name === 'emerald');
 
     if (color.name === 'noir') {
         return {
+            components: accessibleComponents,
             semantic: {
                 primary: {
                     50: '{surface.50}',
@@ -124,22 +203,26 @@ export function getPresetExt(primaryName) {
             }
         };
     } else {
+        const shade = accessibleShade(color.palette);
+        const darker = (steps) => Math.min(shade + steps * 100, 950);
+
         return {
+            components: accessibleComponents,
             semantic: {
                 primary: color.palette,
                 colorScheme: {
                     light: {
                         primary: {
-                            color: '{primary.500}',
+                            color: `{primary.${shade}}`,
                             contrastColor: '#ffffff',
-                            hoverColor: '{primary.600}',
-                            activeColor: '{primary.700}'
+                            hoverColor: `{primary.${darker(1)}}`,
+                            activeColor: `{primary.${darker(2)}}`
                         },
                         highlight: {
                             background: '{primary.50}',
                             focusBackground: '{primary.100}',
-                            color: '{primary.700}',
-                            focusColor: '{primary.800}'
+                            color: `{primary.${Math.max(shade, 700)}}`,
+                            focusColor: `{primary.${Math.max(darker(1), 800)}}`
                         }
                     },
                     dark: {

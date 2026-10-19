@@ -83,7 +83,7 @@ async function changePhoto() {
                 :description="isDemoFilestackKey ? `${$t('settings.profile.photoDescription')} ${$t('settings.profile.photoDemo')}` : $t('settings.profile.photoDescription')"
             >
                 <div class="flex flex-wrap items-center gap-4">
-                    <Avatar :image="avatar" size="xlarge" shape="circle" class="overflow-hidden" />
+                    <Avatar :image="avatar" :ariaLabel="$t('settings.profile.photoAlt')" size="xlarge" shape="circle" class="overflow-hidden" />
                     <Button type="button" :label="$t('settings.profile.changePhoto')" icon="pi pi-upload" severity="secondary" outlined :loading="photoBusy" @click="changePhoto" />
                     <Button v-if="hasPhoto" type="button" :label="$t('settings.profile.removePhoto')" icon="pi pi-trash" severity="danger" text :disabled="photoBusy" @click="savePhoto(null, $t('settings.profile.photoRemoved'))" />
                 </div>

@@ -7,7 +7,13 @@
         list-style: none;
         gap: 1rem;
         flex-wrap: wrap;
-        color: var(--text-color-secondary);
+        // surface-600 rather than the secondary text colour (surface-500), which is under 4.5:1 on the light
+        // page background.
+        color: var(--p-surface-600);
+
+        .app-dark & {
+            color: var(--text-color-secondary);
+        }
 
         li {
             font-weight: 600;

@@ -171,7 +171,8 @@
             "bioDescription": "Uma breve apresentação.",
             "notSaved": "Não guardado",
             "fixFields": "Corrige os campos assinalados.",
-            "savedDetail": "O teu perfil foi atualizado."
+            "savedDetail": "O teu perfil foi atualizado.",
+            "photoAlt": "A tua fotografia de perfil"
         },
         "account": {
             "description": "Início de sessão e segurança.",
@@ -256,7 +257,9 @@
         "inStock": "Em stock",
         "lowStock": "Stock baixo",
         "outOfStock": "Esgotado",
-        "topProducts": "Produtos mais vendidos"
+        "topProducts": "Produtos mais vendidos",
+        "actions": "Ações",
+        "rating": "Classificação: {n} de 5"
     },
     "help": {
         "title": "Como podemos ajudar?",
@@ -292,5 +295,13 @@
         "liabilityBody": "Na medida permitida por lei, a aplicação é fornecida \"tal como está\" e não somos responsáveis por perdas indiretas ou consequentes resultantes da sua utilização.",
         "contactTitle": "Contacto",
         "contactBody": "As questões sobre estes termos podem ser enviadas para {email}."
+    },
+    "a11y": {
+        "skipToContent": "Saltar para o conteúdo principal",
+        "mainMenu": "Menu principal",
+        "toggleMenu": "Mostrar ou ocultar o menu",
+        "pinMenu": "Manter o menu aberto",
+        "homeLink": "Apollo, ir para o painel",
+        "breadcrumb": "Navegação estrutural"
     }
 }

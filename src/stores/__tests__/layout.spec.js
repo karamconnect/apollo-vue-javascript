@@ -60,6 +60,16 @@ describe('layout store', () => {
     });
 
     describe('toggleMenu', () => {
+        it('closeMenuOverlay closes the mobile or overlay menu and says whether it was open', () => {
+            expect(layout.closeMenuOverlay()).toBe(false);
+
+            layout.ui.mobileMenuActive = true;
+            layout.ui.overlayMenuActive = true;
+            expect(layout.closeMenuOverlay()).toBe(true);
+            expect(layout.ui.mobileMenuActive).toBe(false);
+            expect(layout.ui.overlayMenuActive).toBe(false);
+        });
+
         it('collapses the static menu on desktop', () => {
             layout.toggleMenu();
             expect(layout.ui.staticMenuInactive).toBe(true);

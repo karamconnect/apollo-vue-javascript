@@ -31,11 +31,11 @@ watch(
 </script>
 
 <template>
-    <nav class="layout-breadcrumb">
+    <nav class="layout-breadcrumb" :aria-label="$t('a11y.breadcrumb')">
         <ol>
             <template v-for="(breadcrumbRoute, i) in breadcrumbRoutes" :key="breadcrumbRoute">
-                <li>{{ te(breadcrumbRoute) ? t(breadcrumbRoute) : breadcrumbRoute }}</li>
-                <li v-if="i !== breadcrumbRoutes.length - 1" class="layout-breadcrumb-chevron">/</li>
+                <li :aria-current="i === breadcrumbRoutes.length - 1 ? 'page' : undefined">{{ te(breadcrumbRoute) ? t(breadcrumbRoute) : breadcrumbRoute }}</li>
+                <li v-if="i !== breadcrumbRoutes.length - 1" class="layout-breadcrumb-chevron" aria-hidden="true">/</li>
             </template>
         </ol>
     </nav>

@@ -56,7 +56,7 @@ watch(
 
 <template>
     <div class="card h-full">
-        <div class="text-surface-900 dark:text-surface-0 text-xl font-semibold mb-12">{{ $t('dashboard.salesByCategory') }}</div>
+        <h2 class="text-surface-900 dark:text-surface-0 text-xl font-semibold mt-0 mb-12">{{ $t('dashboard.salesByCategory') }}</h2>
         <Chart type="pie" :data="pieData" :height="300" :options="pieOptions"></Chart>
     </div>
 </template>
